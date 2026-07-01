@@ -1,0 +1,30 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:auth_db}
+    username: ${DB_USER:focusfriends}
+    password: ${DB_PASSWORD:focusfriends}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:this-is-a-dev-only-secret-key-change-me-in-production-please-32bytes}
+    access-token-expiration-ms: ${JWT_ACCESS_EXP:900000}      # 15 минут
+    refresh-token-expiration-ms: ${JWT_REFRESH_EXP:604800000} # 7 дней
+
+logging:
+  level:
+    dev.illiasemenov.focusfriends: DEBUG
+    org.springframework.security: INFO

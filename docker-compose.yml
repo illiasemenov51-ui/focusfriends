@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: focusfriends-postgres
+    environment:
+      POSTGRES_USER: focusfriends
+      POSTGRES_PASSWORD: focusfriends
+      POSTGRES_DB: auth_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U focusfriends"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  auth-service:
+    build: ./auth-service
+    container_name: focusfriends-auth-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: auth_db
+      DB_USER: focusfriends
+      DB_PASSWORD: focusfriends
+      JWT_SECRET: ${JWT_SECRET:-this-is-a-dev-only-secret-key-change-me-in-production-please-32bytes}
+    ports:
+      - "8081:8081"
+
+  gateway-service:
+    build: ./gateway-service
+    container_name: focusfriends-gateway-service
+    depends_on:
+      - auth-service
+    environment:
+      AUTH_SERVICE_URL: http://auth-service:8081
+      JWT_SECRET: ${JWT_SECRET:-this-is-a-dev-only-secret-key-change-me-in-production-please-32bytes}
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:
