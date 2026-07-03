@@ -1,0 +1,27 @@
+package dev.illiasemenov.focusfriends.notification.security;
+
+import java.util.UUID;
+
+public final class CurrentUserContext {
+
+    private static final ThreadLocal<UUID> CURRENT_USER = new ThreadLocal<>();
+
+    private CurrentUserContext() {
+    }
+
+    public static void set(UUID userId) {
+        CURRENT_USER.set(userId);
+    }
+
+    public static UUID get() {
+        UUID userId = CURRENT_USER.get();
+        if (userId == null) {
+            throw new IllegalStateException("CurrentUserContext не инициализирован для этого запроса");
+        }
+        return userId;
+    }
+
+    public static void clear() {
+        CURRENT_USER.remove();
+    }
+}

@@ -50,15 +50,50 @@ services:
     ports:
       - "8082:8082"
 
+  social-service:
+    build: ./social-service
+    container_name: focusfriends-social-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: social_db
+      DB_USER: focusfriends
+      DB_PASSWORD: focusfriends
+    ports:
+      - "8083:8083"
+
+  notification-service:
+    build: ./notification-service
+    container_name: focusfriends-notification-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: notification_db
+      DB_USER: focusfriends
+      DB_PASSWORD: focusfriends
+      MAIL_ENABLED: "false"
+    ports:
+      - "8084:8084"
+
   gateway-service:
     build: ./gateway-service
     container_name: focusfriends-gateway-service
     depends_on:
       - auth-service
       - core-service
+      - social-service
+      - notification-service
     environment:
       AUTH_SERVICE_URL: http://auth-service:8081
       CORE_SERVICE_URL: http://core-service:8082
+      SOCIAL_SERVICE_URL: http://social-service:8083
+      NOTIFICATION_SERVICE_URL: http://notification-service:8084
       JWT_SECRET: ${JWT_SECRET:-this-is-a-dev-only-secret-key-change-me-in-production-please-32bytes}
     ports:
       - "8080:8080"
