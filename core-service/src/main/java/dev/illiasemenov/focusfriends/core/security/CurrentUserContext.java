@@ -1,0 +1,31 @@
+package dev.illiasemenov.focusfriends.core.security;
+
+import java.util.UUID;
+
+/**
+ * Хранит userId текущего запроса, извлечённый из заголовка X-User-Id
+ * (заголовок ставит gateway после валидации JWT).
+ */
+public final class CurrentUserContext {
+
+    private static final ThreadLocal<UUID> CURRENT_USER = new ThreadLocal<>();
+
+    private CurrentUserContext() {
+    }
+
+    public static void set(UUID userId) {
+        CURRENT_USER.set(userId);
+    }
+
+    public static UUID get() {
+        UUID userId = CURRENT_USER.get();
+        if (userId == null) {
+            throw new IllegalStateException("CurrentUserContext не инициализирован для этого запроса");
+        }
+        return userId;
+    }
+
+    public static void clear() {
+        CURRENT_USER.remove();
+    }
+}

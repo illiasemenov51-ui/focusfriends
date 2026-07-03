@@ -1,0 +1,30 @@
+package dev.illiasemenov.focusfriends.core.dto;
+
+import dev.illiasemenov.focusfriends.core.entity.Task;
+import dev.illiasemenov.focusfriends.core.entity.TaskPriority;
+import dev.illiasemenov.focusfriends.core.entity.TaskStatus;
+
+import java.time.Instant;
+import java.util.UUID;
+
+public record TaskResponse(
+        UUID id,
+        String title,
+        String description,
+        Instant deadline,
+        TaskPriority priority,
+        TaskStatus status,
+        Instant createdAt
+) {
+    public static TaskResponse from(Task task) {
+        return new TaskResponse(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getDeadline(),
+                task.getPriority(),
+                task.getStatus(),
+                task.getCreatedAt()
+        );
+    }
+}

@@ -12,8 +12,9 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U focusfriends"]
+      test: ["CMD-SHELL", "pg_isready -U focusfriends -d auth_db"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -34,13 +35,30 @@ services:
     ports:
       - "8081:8081"
 
+  core-service:
+    build: ./core-service
+    container_name: focusfriends-core-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: core_db
+      DB_USER: focusfriends
+      DB_PASSWORD: focusfriends
+    ports:
+      - "8082:8082"
+
   gateway-service:
     build: ./gateway-service
     container_name: focusfriends-gateway-service
     depends_on:
       - auth-service
+      - core-service
     environment:
       AUTH_SERVICE_URL: http://auth-service:8081
+      CORE_SERVICE_URL: http://core-service:8082
       JWT_SECRET: ${JWT_SECRET:-this-is-a-dev-only-secret-key-change-me-in-production-please-32bytes}
     ports:
       - "8080:8080"
