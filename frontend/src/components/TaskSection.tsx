@@ -1,0 +1,149 @@
+import { useState, type FormEvent } from "react";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Checkbox,
+  Chip,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+  MenuItem,
+  CircularProgress,
+} from "@mui/material";
+import DeleteOutlineIcon from "@mui/icons-material/Delete";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { taskApi } from "../api/taskApi";
+import type { TaskPriority } from "../types/task";
+
+const priorityColor: Record<TaskPriority, "default" | "warning" | "error"> = {
+  LOW: "default",
+  MEDIUM: "warning",
+  HIGH: "error",
+};
+
+const priorityLabel: Record<TaskPriority, string> = {
+  LOW: "Низкий",
+  MEDIUM: "Средний",
+  HIGH: "Высокий",
+};
+
+export function TaskSection() {
+  const queryClient = useQueryClient();
+  const { data: tasks, isLoading } = useQuery({
+    queryKey: ["tasks"],
+    queryFn: () => taskApi.list(),
+  });
+
+  const [title, setTitle] = useState("");
+  const [priority, setPriority] = useState<TaskPriority>("MEDIUM");
+
+  const createMutation = useMutation({
+    mutationFn: taskApi.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      setTitle("");
+    },
+  });
+
+  const completeMutation = useMutation({
+    mutationFn: taskApi.complete,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+  });
+
+  const removeMutation = useMutation({
+    mutationFn: taskApi.remove,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+  });
+
+  function handleCreate(e: FormEvent) {
+    e.preventDefault();
+    if (!title.trim()) return;
+    createMutation.mutate({ title: title.trim(), priority });
+  }
+
+  return (
+    <Box>
+      <Card component="form" onSubmit={handleCreate} sx={{ mb: 3 }} elevation={0} variant="outlined">
+        <CardContent>
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+            <TextField
+              label="Новая задача"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              fullWidth
+              size="small"
+            />
+            <TextField
+              select
+              label="Приоритет"
+              value={priority}
+              onChange={(e) => setPriority(e.target.value as TaskPriority)}
+              size="small"
+              sx={{ minWidth: 140 }}
+            >
+              <MenuItem value="LOW">Низкий</MenuItem>
+              <MenuItem value="MEDIUM">Средний</MenuItem>
+              <MenuItem value="HIGH">Высокий</MenuItem>
+            </TextField>
+            <Button type="submit" variant="contained" disabled={createMutation.isPending}>
+              Добавить
+            </Button>
+          </Stack>
+        </CardContent>
+      </Card>
+
+      {isLoading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+          <CircularProgress size={28} />
+        </Box>
+      ) : tasks && tasks.length > 0 ? (
+        <Stack spacing={1.5}>
+          {tasks.map((task) => (
+            <Card key={task.id} variant="outlined">
+              <CardContent
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  "&:last-child": { pb: 2 },
+                }}
+              >
+                <Checkbox
+                  checked={task.status === "DONE"}
+                  disabled={task.status === "DONE"}
+                  onChange={() => completeMutation.mutate(task.id)}
+                />
+                <Box sx={{ flexGrow: 1 }}>
+                  <Typography
+                    sx={{
+                      textDecoration: task.status === "DONE" ? "line-through" : "none",
+                      color: task.status === "DONE" ? "text.disabled" : "text.primary",
+                    }}
+                  >
+                    {task.title}
+                  </Typography>
+                </Box>
+                <Chip
+                  label={priorityLabel[task.priority]}
+                  color={priorityColor[task.priority]}
+                  size="small"
+                  variant="outlined"
+                />
+                <IconButton size="small" onClick={() => removeMutation.mutate(task.id)}>
+                  <DeleteOutlineIcon fontSize="small" />
+                </IconButton>
+              </CardContent>
+            </Card>
+          ))}
+        </Stack>
+      ) : (
+        <Typography color="text.secondary" sx={{ textAlign: "center", py: 4 }}>
+          Пока нет задач — добавь первую выше
+        </Typography>
+      )}
+    </Box>
+  );
+}
