@@ -45,10 +45,15 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getURI().getPath();
 
-        if (isPublic(path, request.getMethod().name())) {
+        // Preflight-запросы браузера (CORS) не несут Authorization — пропускаем без проверки,
+        // иначе браузер получит 401 на OPTIONS ещё до реального запроса.
+        if (request.getMethod() != null && "OPTIONS".equals(request.getMethod().name())) {
             return chain.filter(exchange);
         }
 
+        if (isPublic(path, request.getMethod().name())) {
+            return chain.filter(exchange);
+        }
         String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
             return unauthorized(exchange, "Отсутствует Authorization заголовок");

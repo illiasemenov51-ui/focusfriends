@@ -14,7 +14,6 @@ import {
   CircularProgress,
 } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/Delete";
-import FlagCircleIcon from "@mui/icons-material/FlagCircle";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { taskApi } from "../api/taskApi";
 import { useGamification } from "../context/GamificationContext";
@@ -24,12 +23,6 @@ const priorityColor: Record<TaskPriority, "default" | "warning" | "error"> = {
   LOW: "default",
   MEDIUM: "warning",
   HIGH: "error",
-};
-
-const priorityIconColor: Record<TaskPriority, string> = {
-  LOW: "#94A3B8",
-  MEDIUM: "#F5A524",
-  HIGH: "#E64545",
 };
 
 const priorityLabel: Record<TaskPriority, string> = {
@@ -121,13 +114,8 @@ export function TaskSection() {
         </Box>
       ) : tasks && tasks.length > 0 ? (
         <Stack spacing={1.5}>
-          {tasks.map((task, index) => (
-            <Card
-              key={task.id}
-              variant="outlined"
-              className="fade-in-item app-card"
-              style={{ animationDelay: `${index * 0.04}s` }}
-            >
+          {tasks.map((task) => (
+            <Card key={task.id} variant="outlined">
               <CardContent
                 sx={{
                   display: "flex",
@@ -136,7 +124,6 @@ export function TaskSection() {
                   "&:last-child": { pb: 2 },
                 }}
               >
-                <FlagCircleIcon sx={{ color: priorityIconColor[task.priority] }} fontSize="small" />
                 <Checkbox
                   checked={task.status === "DONE"}
                   disabled={task.status === "DONE"}

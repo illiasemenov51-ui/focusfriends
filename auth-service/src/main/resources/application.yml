@@ -1,42 +1,30 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
   application:
-    name: gateway-service
-  cloud:
-    gateway:
-      routes:
-        - id: auth-service
-          uri: ${AUTH_SERVICE_URL:http://localhost:8081}
-          predicates:
-            - Path=/api/auth/**,/api/users/**
-
-        - id: core-service
-          uri: ${CORE_SERVICE_URL:http://localhost:8082}
-          predicates:
-            - Path=/api/tasks/**,/api/habits/**
-
-        - id: social-service
-          uri: ${SOCIAL_SERVICE_URL:http://localhost:8083}
-          predicates:
-            - Path=/api/friends/**,/api/groups/**,/api/leaderboard/**
-
-        - id: notification-service
-          uri: ${NOTIFICATION_SERVICE_URL:http://localhost:8084}
-          predicates:
-            - Path=/api/notifications/**
+    name: auth-service
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:auth_db}
+    username: ${DB_USER:focusfriends}
+    password: ${DB_PASSWORD:focusfriends}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
 
 app:
   jwt:
     secret: ${JWT_SECRET:this-is-a-dev-only-secret-key-change-me-in-production-please-32bytes}
-  # Пути, на которые JWT-фильтр не требует токена
-  public-paths:
-    - /api/auth/register
-    - /api/auth/login
-    - /api/auth/refresh
+    access-token-expiration-ms: ${JWT_ACCESS_EXP:900000}
+    refresh-token-expiration-ms: ${JWT_REFRESH_EXP:604800000}
 
 logging:
   level:
     dev.illiasemenov.focusfriends: DEBUG
-    org.springframework.cloud.gateway: INFO
+    org.springframework.security: INFO

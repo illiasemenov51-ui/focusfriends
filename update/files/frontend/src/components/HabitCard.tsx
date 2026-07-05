@@ -1,11 +1,6 @@
-import { Avatar, Box, Card, CardContent, Chip, IconButton, Stack, Typography, Button } from "@mui/material";
+import { Box, Card, CardContent, Chip, IconButton, Stack, Typography, Button } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/Delete";
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
-import SchoolIcon from "@mui/icons-material/School";
-import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
-import CodeIcon from "@mui/icons-material/Code";
-import StarIcon from "@mui/icons-material/Star";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { habitApi } from "../api/habitApi";
 import { useGamification } from "../context/GamificationContext";
@@ -17,22 +12,6 @@ const categoryLabel: Record<Habit["category"], string> = {
   READING: "Чтение",
   CODING: "Код",
   OTHER: "Другое",
-};
-
-const categoryIcon: Record<Habit["category"], typeof SchoolIcon> = {
-  STUDY: SchoolIcon,
-  SPORT: FitnessCenterIcon,
-  READING: MenuBookIcon,
-  CODING: CodeIcon,
-  OTHER: StarIcon,
-};
-
-const categoryColor: Record<Habit["category"], string> = {
-  STUDY: "#5B5FEF",
-  SPORT: "#22A65B",
-  READING: "#B4590E",
-  CODING: "#7C3AED",
-  OTHER: "#64748B",
 };
 
 // Базовый опыт за отметку привычки + бонус за длину серии (макс. +30).
@@ -64,15 +43,9 @@ export function HabitCard({ habit }: { habit: Habit }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["habits"] }),
   });
 
-  const CategoryIcon = categoryIcon[habit.category];
-
   return (
-    <Card variant="outlined" className="fade-in-item app-card">
+    <Card variant="outlined">
       <CardContent sx={{ display: "flex", alignItems: "center", gap: 1.5, "&:last-child": { pb: 2 } }}>
-        <Avatar sx={{ bgcolor: categoryColor[habit.category], width: 36, height: 36 }}>
-          <CategoryIcon fontSize="small" />
-        </Avatar>
-
         <Box sx={{ flexGrow: 1 }}>
           <Typography sx={{ fontWeight: 500 }}>{habit.title}</Typography>
           <Chip label={categoryLabel[habit.category]} size="small" sx={{ mt: 0.5 }} />
