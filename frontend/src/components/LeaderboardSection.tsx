@@ -53,6 +53,15 @@ export function LeaderboardSection() {
 
   return (
     <Box>
+      <Box sx={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", mb: 1.5 }}>
+        <Typography className="pixel-heading" sx={{ fontSize: 14 }}>
+          RANKING
+        </Typography>
+        <Typography className="pixel-muted" sx={{ fontSize: 18 }}>
+          friends XP
+        </Typography>
+      </Box>
+
       <Tabs
         value={period}
         onChange={handleChange}
@@ -84,7 +93,7 @@ export function LeaderboardSection() {
                 sx={{
                   borderColor: isMe ? "primary.main" : undefined,
                   borderWidth: isMe ? 2 : 1,
-                  bgcolor: isMe ? "primary.50" : undefined,
+                  bgcolor: isMe ? "rgba(57, 255, 20, 0.08)" : undefined,
                 }}
               >
                 <CardContent
@@ -92,6 +101,7 @@ export function LeaderboardSection() {
                     display: "flex",
                     alignItems: "center",
                     gap: 1.5,
+                    flexWrap: { xs: "wrap", sm: "nowrap" },
                     "&:last-child": { pb: 2 },
                   }}
                 >
@@ -103,22 +113,31 @@ export function LeaderboardSection() {
                       fontSize: medalColor ? 18 : 15,
                       color: medalColor ?? "text.secondary",
                       flexShrink: 0,
+                      fontFamily: '"Press Start 2P", monospace',
                     }}
                   >
                     {medalColor ? <EmojiEventsIcon sx={{ color: medalColor }} /> : index + 1}
                   </Box>
 
-                  <Avatar sx={{ width: 36, height: 36, bgcolor: "secondary.main" }}>
+                  <Avatar
+                    sx={{
+                      width: 36,
+                      height: 36,
+                      bgcolor: "secondary.main",
+                      border: "2px solid #0B0E14",
+                      boxShadow: "2px 2px 0 #000",
+                    }}
+                  >
                     {entry.name.charAt(0).toUpperCase()}
                   </Avatar>
 
                   <Box sx={{ flexGrow: 1 }}>
-                    <Typography sx={{ fontWeight: isMe ? 700 : 500 }}>
+                    <Typography sx={{ fontSize: 20, color: isMe ? "primary.main" : "text.primary" }}>
                       {entry.name} {isMe && "(ты)"}
                     </Typography>
                   </Box>
 
-                  <Typography sx={{ fontWeight: 700, color: "primary.main" }}>
+                  <Typography sx={{ fontFamily: '"Press Start 2P", monospace', fontSize: 11, color: "primary.main" }}>
                     {entry.points} XP
                   </Typography>
                 </CardContent>
@@ -127,7 +146,7 @@ export function LeaderboardSection() {
           })}
         </Stack>
       ) : (
-        <Typography color="text.secondary" sx={{ textAlign: "center", py: 4 }}>
+        <Typography color="text.secondary" sx={{ textAlign: "center", py: 4, fontSize: 20 }}>
           Пока никто не заработал очков за этот период — начни выполнять задачи!
         </Typography>
       )}

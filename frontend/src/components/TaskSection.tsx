@@ -86,6 +86,15 @@ export function TaskSection() {
 
   return (
     <Box>
+      <Box sx={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", mb: 1.5 }}>
+        <Typography className="pixel-heading" sx={{ fontSize: 14 }}>
+          QUEST LOG
+        </Typography>
+        <Typography className="pixel-muted" sx={{ fontSize: 18 }}>
+          +10/+20/+35 XP
+        </Typography>
+      </Box>
+
       <Card component="form" onSubmit={handleCreate} sx={{ mb: 3 }} elevation={0} variant="outlined">
         <CardContent>
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
@@ -109,7 +118,7 @@ export function TaskSection() {
               <MenuItem value="HIGH">Высокий</MenuItem>
             </TextField>
             <Button type="submit" variant="contained" disabled={createMutation.isPending}>
-              Добавить
+              + QUEST
             </Button>
           </Stack>
         </CardContent>
@@ -133,6 +142,7 @@ export function TaskSection() {
                   display: "flex",
                   alignItems: "center",
                   gap: 1,
+                  flexWrap: { xs: "wrap", sm: "nowrap" },
                   "&:last-child": { pb: 2 },
                 }}
               >
@@ -147,6 +157,7 @@ export function TaskSection() {
                     sx={{
                       textDecoration: task.status === "DONE" ? "line-through" : "none",
                       color: task.status === "DONE" ? "text.disabled" : "text.primary",
+                      fontSize: 20,
                     }}
                   >
                     {task.title}
@@ -166,7 +177,7 @@ export function TaskSection() {
           ))}
         </Stack>
       ) : (
-        <Typography color="text.secondary" sx={{ textAlign: "center", py: 4 }}>
+        <Typography color="text.secondary" sx={{ textAlign: "center", py: 4, fontSize: 20 }}>
           Пока нет задач — добавь первую выше
         </Typography>
       )}

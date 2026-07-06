@@ -35,17 +35,18 @@ export function XpToast() {
           key={toast.id}
           className="xp-toast"
           sx={{
-            bgcolor: "#2e7d32",
-            color: "#fff",
+            bgcolor: "#39FF14",
+            color: "#0B0E14",
             px: 1.75,
             py: 1,
-            borderRadius: 2,
-            boxShadow: 4,
+            boxShadow: "4px 4px 0 #000",
             minWidth: 160,
           }}
         >
-          <Typography sx={{ fontWeight: 700, fontSize: 14 }}>+{toast.amount} XP</Typography>
-          <Typography sx={{ fontSize: 11, opacity: 0.9 }}>{toast.reason}</Typography>
+          <Typography sx={{ fontFamily: '"Press Start 2P", monospace', fontSize: 11 }}>
+            +{toast.amount} XP
+          </Typography>
+          <Typography sx={{ fontSize: 16, opacity: 0.9 }}>{toast.reason}</Typography>
         </Box>
       ))}
     </Box>

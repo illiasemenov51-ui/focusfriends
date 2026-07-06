@@ -19,41 +19,41 @@ export function XpBar() {
 
   return (
     <Tooltip title={`${currentLevelXp} / ${xpForNextLevel} XP до следующего уровня`}>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 150 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 170 }}>
         <Box
           className={pop ? "level-badge-pop" : undefined}
           sx={{
-            width: 34,
-            height: 34,
-            borderRadius: "50%",
+            width: 32,
+            height: 32,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontWeight: 700,
-            fontSize: 14,
-            color: "#fff",
-            background: "linear-gradient(135deg, #FFD166, #FF7A59)",
-            boxShadow: "0 0 0 2px rgba(255,255,255,0.4)",
+            fontFamily: '"Press Start 2P", monospace',
+            fontWeight: 400,
+            fontSize: 12,
+            color: "#0B0E14",
+            bgcolor: "#39FF14",
+            border: "2px solid #0B0E14",
+            boxShadow: "2px 2px 0 #000",
             flexShrink: 0,
           }}
         >
           {level}
         </Box>
-        <Box sx={{ flexGrow: 1, minWidth: 80 }}>
+        <Box sx={{ flexGrow: 1, minWidth: 90 }}>
           <LinearProgress
             variant="determinate"
             value={Math.min(progress * 100, 100)}
             sx={{
-              height: 8,
-              borderRadius: 5,
-              bgcolor: "rgba(255,255,255,0.25)",
+              height: 10,
+              bgcolor: "#0B0E14",
+              border: "2px solid #0B0E14",
               "& .MuiLinearProgress-bar": {
-                borderRadius: 5,
-                background: "linear-gradient(90deg, #FFD166, #FF7A59)",
+                backgroundColor: "#FF206E",
               },
             }}
           />
-          <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.85)", lineHeight: 1.4 }}>
+          <Typography variant="caption" sx={{ color: "#8FB39A", lineHeight: 1.4, fontSize: 13 }}>
             {currentLevelXp} / {xpForNextLevel} XP
           </Typography>
         </Box>

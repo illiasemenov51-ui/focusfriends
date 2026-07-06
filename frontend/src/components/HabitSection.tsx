@@ -41,6 +41,15 @@ export function HabitSection() {
 
   return (
     <Box>
+      <Box sx={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", mb: 1.5 }}>
+        <Typography className="pixel-heading" sx={{ fontSize: 14 }}>
+          SKILL TREE
+        </Typography>
+        <Typography className="pixel-muted" sx={{ fontSize: 18 }}>
+          streak bonus
+        </Typography>
+      </Box>
+
       <Card component="form" onSubmit={handleCreate} sx={{ mb: 3 }} elevation={0} variant="outlined">
         <CardContent>
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
@@ -66,7 +75,7 @@ export function HabitSection() {
               <MenuItem value="OTHER">Другое</MenuItem>
             </TextField>
             <Button type="submit" variant="contained" disabled={createMutation.isPending}>
-              Добавить
+              + SKILL
             </Button>
           </Stack>
         </CardContent>
@@ -83,7 +92,7 @@ export function HabitSection() {
           ))}
         </Stack>
       ) : (
-        <Typography color="text.secondary" sx={{ textAlign: "center", py: 4 }}>
+        <Typography color="text.secondary" sx={{ textAlign: "center", py: 4, fontSize: 20 }}>
           Пока нет привычек — добавь первую выше
         </Typography>
       )}

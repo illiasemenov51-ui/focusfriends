@@ -16,19 +16,35 @@ export function Layout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "grey.50" }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
       <AppBar position="static" color="primary" elevation={0}>
         <Toolbar sx={{ gap: 2, flexWrap: "wrap", py: { xs: 1, sm: 0 } }}>
-          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
-            FocusFriends
+          <Typography
+            variant="h6"
+            sx={{ flexGrow: 1, fontSize: { xs: "0.68rem", sm: "0.8rem" }, color: "primary.main" }}
+          >
+            ▮ FOCUSFRIENDS
           </Typography>
           {user && <XpBar />}
           {user && (
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-              <Avatar sx={{ width: 32, height: 32, bgcolor: "secondary.main" }}>
+              <Avatar
+                sx={{
+                  width: 32,
+                  height: 32,
+                  bgcolor: "secondary.main",
+                  color: "#fff",
+                  border: "2px solid #0B0E14",
+                  boxShadow: "2px 2px 0 #000",
+                  fontFamily: '"Press Start 2P", monospace',
+                  fontSize: 12,
+                }}
+              >
                 {user.name.charAt(0).toUpperCase()}
               </Avatar>
-              <Typography variant="body2">{user.name}</Typography>
+              <Typography variant="body2" sx={{ fontSize: 18 }}>
+                {user.name}
+              </Typography>
               <Button color="inherit" size="small" onClick={handleLogout}>
                 Выйти
               </Button>
@@ -36,7 +52,7 @@ export function Layout({ children }: { children: ReactNode }) {
           )}
         </Toolbar>
       </AppBar>
-      <Container maxWidth="md" sx={{ py: 4 }}>
+      <Container maxWidth="md" sx={{ py: { xs: 2.5, sm: 4 } }}>
         {children}
       </Container>
       {user && <XpToast />}

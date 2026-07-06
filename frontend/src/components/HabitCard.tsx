@@ -28,11 +28,11 @@ const categoryIcon: Record<Habit["category"], typeof SchoolIcon> = {
 };
 
 const categoryColor: Record<Habit["category"], string> = {
-  STUDY: "#5B5FEF",
-  SPORT: "#22A65B",
-  READING: "#B4590E",
-  CODING: "#7C3AED",
-  OTHER: "#64748B",
+  STUDY: "#4CC9F0",
+  SPORT: "#39FF14",
+  READING: "#FFD23F",
+  CODING: "#FF206E",
+  OTHER: "#8FB39A",
 };
 
 // Базовый опыт за отметку привычки + бонус за длину серии (макс. +30).
@@ -68,19 +68,38 @@ export function HabitCard({ habit }: { habit: Habit }) {
 
   return (
     <Card variant="outlined" className="fade-in-item app-card">
-      <CardContent sx={{ display: "flex", alignItems: "center", gap: 1.5, "&:last-child": { pb: 2 } }}>
-        <Avatar sx={{ bgcolor: categoryColor[habit.category], width: 36, height: 36 }}>
+      <CardContent
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1.5,
+          flexWrap: { xs: "wrap", sm: "nowrap" },
+          "&:last-child": { pb: 2 },
+        }}
+      >
+        <Avatar
+          sx={{
+            bgcolor: categoryColor[habit.category],
+            color: "#0B0E14",
+            width: 38,
+            height: 38,
+            border: "2px solid #0B0E14",
+            boxShadow: "2px 2px 0 #000",
+          }}
+        >
           <CategoryIcon fontSize="small" />
         </Avatar>
 
         <Box sx={{ flexGrow: 1 }}>
-          <Typography sx={{ fontWeight: 500 }}>{habit.title}</Typography>
+          <Typography sx={{ fontSize: 20 }}>{habit.title}</Typography>
           <Chip label={categoryLabel[habit.category]} size="small" sx={{ mt: 0.5 }} />
         </Box>
 
         <Stack direction="row" spacing={0.5} sx={{ alignItems: "center", color: "warning.main" }}>
           <LocalFireDepartmentIcon fontSize="small" />
-          <Typography sx={{ fontWeight: 600 }}>{streak?.currentStreak ?? 0}</Typography>
+          <Typography sx={{ fontFamily: '"Press Start 2P", monospace', fontSize: 12 }}>
+            {streak?.currentStreak ?? 0}
+          </Typography>
         </Stack>
 
         <Button
@@ -89,7 +108,7 @@ export function HabitCard({ habit }: { habit: Habit }) {
           onClick={() => logMutation.mutate()}
           disabled={logMutation.isPending}
         >
-          Отметить сегодня
+          CHECK
         </Button>
 
         <IconButton size="small" onClick={() => removeMutation.mutate()}>

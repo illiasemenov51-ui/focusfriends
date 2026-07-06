@@ -1,6 +1,6 @@
 # FocusFriends
 
-Совместный тайм-менеджмент и трекер привычек с элементами соревнования — бэкенд на микросервисной архитектуре (Java 21, Spring Boot 3, Spring Cloud Gateway, PostgreSQL, Docker).
+Совместный тайм-менеджмент и трекер привычек с элементами соревнования — бэкенд на микросервисной архитектуре (Java 25, Spring Boot 3, Spring Cloud Gateway, PostgreSQL, Docker).
 
 Портфолио-проект уровня стажировки / junior Backend Engineer: REST API, JWT-аутентификация, API Gateway, изоляция БД по сервисам, Docker Compose для локального деплоя.
 
@@ -46,7 +46,7 @@
 
 ## Стек
 
-- **Backend:** Java 21, Spring Boot 3.3, Spring Security, Spring Data JPA, Spring Cloud Gateway, Hibernate
+- **Backend:** Java 25, Spring Boot 3.3, Spring Security, Spring Data JPA, Spring Cloud Gateway, Hibernate
 - **Auth:** JWT (jjwt), BCrypt, access + refresh токены с ротацией
 - **DB:** PostgreSQL 16, отдельная схема на сервис
 - **Infra:** Docker, Docker Compose, многоступенчатые Dockerfile (Maven build → JRE runtime)

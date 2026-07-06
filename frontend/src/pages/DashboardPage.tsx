@@ -5,6 +5,12 @@ import { TaskSection } from "../components/TaskSection";
 import { HabitSection } from "../components/HabitSection";
 import { LeaderboardSection } from "../components/LeaderboardSection";
 
+const tabs = [
+  { label: "КВЕСТЫ", hint: "задачи дают XP по сложности" },
+  { label: "НАВЫКИ", hint: "привычки качают серию" },
+  { label: "РЕЙТИНГ", hint: "соревнование друзей" },
+];
+
 export function DashboardPage() {
   const [tab, setTab] = useState(0);
 
@@ -14,11 +20,29 @@ export function DashboardPage() {
 
   return (
     <Layout>
-      <Tabs value={tab} onChange={handleChange} sx={{ mb: 3 }}>
-        <Tab label="Задачи" />
-        <Tab label="Привычки" />
-        <Tab label="Рейтинг" />
-      </Tabs>
+      <Box className="pixel-panel" sx={{ p: { xs: 1.5, sm: 2 }, mb: 3 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            gap: 2,
+            alignItems: "center",
+            mb: 1.5,
+          }}
+        >
+          <Box className="pixel-heading" sx={{ fontSize: { xs: 12, sm: 14 } }}>
+            МЕНЮ ИГРОКА
+          </Box>
+          <Box className="pixel-muted" sx={{ fontSize: 18 }}>
+            {tabs[tab].hint}
+          </Box>
+        </Box>
+        <Tabs value={tab} onChange={handleChange} variant="scrollable" scrollButtons="auto">
+          {tabs.map((item) => (
+            <Tab key={item.label} label={item.label} />
+          ))}
+        </Tabs>
+      </Box>
       <Box>
         {tab === 0 ? <TaskSection /> : tab === 1 ? <HabitSection /> : <LeaderboardSection />}
       </Box>
