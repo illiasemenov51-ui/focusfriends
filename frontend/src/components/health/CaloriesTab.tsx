@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { Alert, Box, Button, Card, CardContent, CircularProgress, LinearProgress, Stack, TextField, Typography } from "@mui/material";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutlined";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { healthApi } from "../../api/healthApi";
+
+function todayIso(): string {
+  return new Date().toISOString().slice(0, 10);
+}
 
 export function CaloriesTab() {
   const queryClient = useQueryClient();
@@ -16,6 +21,13 @@ export function CaloriesTab() {
     queryKey: ["health", "summary"],
     queryFn: healthApi.getSummary,
   });
+
+  const todayQuery = useQuery({
+    queryKey: ["health", "checkins", "today"],
+    queryFn: () => healthApi.listCheckins(todayIso(), todayIso()),
+  });
+
+  const todayCalories = todayQuery.data?.[0]?.caloriesIntake ?? null;
 
   const saveGoalMutation = useMutation({
     mutationFn: (calorieGoal: number | null) =>
@@ -35,6 +47,12 @@ export function CaloriesTab() {
 
   return (
     <Box>
+      {todayCalories != null && (
+        <Alert icon={<CheckCircleOutlineIcon />} severity="success" sx={{ mb: 2 }}>
+          Калории на сегодня уже посчитаны: {todayCalories} ккал
+        </Alert>
+      )}
+
       <Card variant="outlined" className="app-card" sx={{ mb: 2 }}>
         <CardContent>
           <Typography className="pixel-muted" sx={{ fontSize: 15, mb: 1.5 }}>
