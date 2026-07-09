@@ -1,18 +1,21 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { AppBar, Toolbar, Typography, Button, IconButton, Container, Box, Avatar, Tooltip } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import LogoutIcon from "@mui/icons-material/Logout";
+import PaletteIcon from "@mui/icons-material/Palette";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
 import { XpBar } from "./XpBar";
 import { XpToast } from "./XpToast";
 import { LevelUpDialog } from "./LevelUpDialog";
+import { ThemePickerDialog } from "./ThemePickerDialog";
 
 export function Layout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [themePickerOpen, setThemePickerOpen] = useState(false);
 
   async function handleLogout() {
     await logout();
@@ -22,7 +25,7 @@ export function Layout({ children }: { children: ReactNode }) {
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
       <AppBar position="static" color="primary" elevation={0}>
-        <Toolbar sx={{ gap: 2, flexWrap: "wrap", py: { xs: 1, sm: 0.5 } }}>
+        <Toolbar sx={{ gap: 2.5, flexWrap: "wrap", py: { xs: 1, sm: 1 } }}>
           <Typography
             variant="h6"
             sx={{ flexGrow: 1, fontSize: { xs: "0.68rem", sm: "0.8rem" }, color: "primary.main" }}
@@ -32,6 +35,12 @@ export function Layout({ children }: { children: ReactNode }) {
           {user && <XpBar />}
           {user && (
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Tooltip title="Стиль оформления">
+                <IconButton size="small" onClick={() => setThemePickerOpen(true)} aria-label="Стиль оформления">
+                  <PaletteIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+
               <Tooltip title="Обновить данные">
                 <IconButton
                   size="small"
@@ -73,6 +82,7 @@ export function Layout({ children }: { children: ReactNode }) {
       </Container>
       {user && <XpToast />}
       {user && <LevelUpDialog />}
+      <ThemePickerDialog open={themePickerOpen} onClose={() => setThemePickerOpen(false)} />
     </Box>
   );
 }
