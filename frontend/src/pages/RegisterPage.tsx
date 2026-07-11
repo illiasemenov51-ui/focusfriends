@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Box,
   Button,
@@ -16,6 +16,8 @@ import { isAxiosError } from "axios";
 export function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/";
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -29,7 +31,7 @@ export function RegisterPage() {
     setIsSubmitting(true);
     try {
       await register({ name, email, password });
-      navigate("/");
+      navigate(redirectTo);
     } catch (err) {
       const message = isAxiosError(err)
         ? err.response?.data?.message ?? "Не удалось зарегистрироваться"
@@ -100,7 +102,10 @@ export function RegisterPage() {
 
         <Typography variant="body2" sx={{ mt: 3, textAlign: "center" }}>
           Уже есть аккаунт?{" "}
-          <Link component={RouterLink} to="/login">
+          <Link
+            component={RouterLink}
+            to={redirectTo !== "/" ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login"}
+          >
             Войти
           </Link>
         </Typography>
