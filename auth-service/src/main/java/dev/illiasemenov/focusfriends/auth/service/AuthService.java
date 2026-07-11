@@ -3,9 +3,7 @@ package dev.illiasemenov.focusfriends.auth.service;
 import dev.illiasemenov.focusfriends.auth.client.NotificationServiceClient;
 import dev.illiasemenov.focusfriends.auth.dto.AuthResponse;
 import dev.illiasemenov.focusfriends.auth.dto.LoginRequest;
-import dev.illiasemenov.focusfriends.auth.dto.ResetPasswordRequest;
 import dev.illiasemenov.focusfriends.auth.dto.RegisterRequest;
-import dev.illiasemenov.focusfriends.auth.dto.RequestPasswordResetRequest;
 import dev.illiasemenov.focusfriends.auth.entity.EmailVerificationToken;
 import dev.illiasemenov.focusfriends.auth.entity.RefreshToken;
 import dev.illiasemenov.focusfriends.auth.entity.PasswordResetToken;
@@ -79,7 +77,7 @@ public class AuthService {
                 .role(Role.USER)
                 .build();
 
-        userRepository.save(user);
+        user = userRepository.saveAndFlush(user);
         issueVerificationEmail(user);
         log.info("New user registered id={}, email={}", user.getId(), user.getEmail());
 

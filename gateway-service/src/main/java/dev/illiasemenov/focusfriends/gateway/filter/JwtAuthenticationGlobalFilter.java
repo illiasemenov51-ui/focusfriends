@@ -34,6 +34,7 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
     private static final List<String> FRONTEND_PUBLIC_PATHS = List.of(
             "/",
             "/index.html",
+            "/favicon.svg",
             "/assets",
             "/favicon.ico",
             "/manifest.json",

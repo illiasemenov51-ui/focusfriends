@@ -65,6 +65,7 @@ app:
     - /api/auth/verify-email
     - /api/auth/request-password-reset
     - /api/auth/reset-password
+    - /favicon.svg
 
 logging:
   level:

@@ -17,6 +17,8 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CheckIcon from "@mui/icons-material/Check";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import LinkIcon from "@mui/icons-material/Link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { friendApi } from "../api/friendApi";
 import { leaderboardApi } from "../api/leaderboardApi";
@@ -41,6 +43,19 @@ export function FriendsSection() {
   const queryClient = useQueryClient();
   const [expandedFriendId, setExpandedFriendId] = useState<string | null>(null);
   const [newFriendId, setNewFriendId] = useState("");
+  const [copiedField, setCopiedField] = useState<"id" | "link" | null>(null);
+
+  async function copyToClipboard(text: string, field: "id" | "link") {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedField(field);
+      setTimeout(() => setCopiedField((current) => (current === field ? null : current)), 2000);
+    } catch {
+      // буфер обмена может быть недоступен в некоторых браузерах
+    }
+  }
+
+  const inviteLink = user ? `${window.location.origin}/invite/${user.id}` : "";
 
   const friendsQuery = useQuery({
     queryKey: ["friends", "accepted", user?.id],
@@ -135,6 +150,47 @@ export function FriendsSection() {
           уровни и активность друзей
         </Typography>
       </Box>
+
+      {/* Мой ID и ссылка-приглашение */}
+      {user && (
+        <Card variant="outlined" className="app-card" sx={{ mb: 2 }}>
+          <CardContent sx={{ pb: "16px !important" }}>
+            <Typography className="pixel-muted" sx={{ fontSize: 16, mb: 1 }}>
+              твой ID — поделись, чтобы тебя добавили в друзья
+            </Typography>
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ mb: 1.5 }}>
+              <TextField
+                size="small"
+                value={user.id}
+                slotProps={{ input: { readOnly: true } }}
+                sx={{ flexGrow: 1, minWidth: 240 }}
+              />
+              <Button
+                variant="outlined"
+                startIcon={<ContentCopyIcon />}
+                onClick={() => copyToClipboard(user.id, "id")}
+              >
+                {copiedField === "id" ? "Скопировано!" : "Копировать ID"}
+              </Button>
+            </Stack>
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+              <TextField
+                size="small"
+                value={inviteLink}
+                slotProps={{ input: { readOnly: true } }}
+                sx={{ flexGrow: 1, minWidth: 240 }}
+              />
+              <Button
+                variant="contained"
+                startIcon={<LinkIcon />}
+                onClick={() => copyToClipboard(inviteLink, "link")}
+              >
+                {copiedField === "link" ? "Скопировано!" : "Скопировать ссылку"}
+              </Button>
+            </Stack>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Добавить друга по id */}
       <Card variant="outlined" className="app-card" sx={{ mb: 2 }}>

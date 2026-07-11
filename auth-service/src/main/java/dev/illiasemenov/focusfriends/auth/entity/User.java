@@ -29,7 +29,7 @@ public class User {
     @Column(nullable = false)
     private Role role = Role.USER;
 
-    @Column(name = "email_verified", nullable = false)
+    @Column(name = "email_verified")
     private boolean emailVerified = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -119,6 +119,9 @@ public class User {
 
     @PrePersist
     void onCreate() {
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
         if (createdAt == null) {
             createdAt = Instant.now();
         }

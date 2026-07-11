@@ -23,7 +23,7 @@ app:
     secret: ${JWT_SECRET:this-is-a-dev-only-secret-key-change-me-in-production-please-32bytes}
     access-token-expiration-ms: ${JWT_ACCESS_EXP:900000}
     refresh-token-expiration-ms: ${JWT_REFRESH_EXP:604800000}
-  frontend-url: ${FRONTEND_URL:http://localhost:5173}
+  frontend-url: ${FRONTEND_URL:http://localhost:8080}
 
 notification:
   service:
