@@ -67,9 +67,9 @@ public class NotificationService {
             return;
         }
 
-        String recipient = resolveRecipientEmail();
+        String recipient = resolveRecipientEmail(request);
         if (!StringUtils.hasText(recipient)) {
-            log.warn("Не удалось отправить email-уведомление userId={} — не задан ни app.mail-to, ни app.mail-from", request.userId());
+            log.warn("Не удалось отправить email-уведомление userId={} — не задан ни recipientEmail в запросе, ни app.mail-to/app.mail-from", request.userId());
             return;
         }
 
@@ -85,7 +85,10 @@ public class NotificationService {
         }
     }
 
-    private String resolveRecipientEmail() {
+    private String resolveRecipientEmail(SendNotificationRequest request) {
+        if (StringUtils.hasText(request.recipientEmail())) {
+            return request.recipientEmail();
+        }
         if (StringUtils.hasText(appProperties.mailTo())) {
             return appProperties.mailTo();
         }

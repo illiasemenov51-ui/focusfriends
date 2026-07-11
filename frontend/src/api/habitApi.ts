@@ -22,6 +22,14 @@ export const habitApi = {
     return response.data;
   },
 
+  // Отмечает привычку выполненной за весь месяц сразу (будущие дни игнорируются на бэкенде).
+  logMonth: async (id: string, year: number, month: number): Promise<HabitLogResponse[]> => {
+    const response = await apiClient.patch<HabitLogResponse[]>(`/api/habits/${id}/log/month`, null, {
+      params: { year, month },
+    });
+    return response.data;
+  },
+
   getStreak: async (id: string): Promise<StreakResponse> => {
     const response = await apiClient.get<StreakResponse>(`/api/habits/${id}/streak`);
     return response.data;

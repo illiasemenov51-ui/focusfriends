@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -90,6 +92,39 @@ public class HabitService {
 
         log.setCompleted(true);
         return habitLogRepository.save(log);
+    }
+
+    /**
+     * Отмечает привычку выполненной за все дни указанного месяца сразу
+     * (удобно, если хочешь заранее запланировать/задним числом заполнить месяц).
+     * Дни в будущем (после сегодняшнего) не трогаем — отмечать невыполненное будущее бессмысленно.
+     */
+    @Transactional
+    public List<HabitLog> logMonth(UUID userId, UUID habitId, YearMonth month) {
+        getOwnedHabit(userId, habitId); // проверка владения
+
+        LocalDate today = LocalDate.now();
+        LocalDate start = month.atDay(1);
+        LocalDate end = month.atEndOfMonth();
+        if (end.isAfter(today) && YearMonth.from(today).equals(month)) {
+            end = today;
+        } else if (start.isAfter(today)) {
+            // весь месяц ещё не наступил — отмечать нечего
+            return List.of();
+        }
+
+        List<HabitLog> results = new ArrayList<>();
+        for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+            LocalDate currentDate = date;
+            HabitLog log = habitLogRepository.findByHabitIdAndDate(habitId, currentDate)
+                    .orElseGet(() -> HabitLog.builder()
+                            .habitId(habitId)
+                            .date(currentDate)
+                            .build());
+            log.setCompleted(true);
+            results.add(habitLogRepository.save(log));
+        }
+        return results;
     }
 
     /**

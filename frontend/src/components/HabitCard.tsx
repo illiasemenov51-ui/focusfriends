@@ -1,6 +1,7 @@
-import { Avatar, Box, Card, CardContent, Chip, IconButton, Stack, Typography, Button } from "@mui/material";
+import { Avatar, Box, Card, CardContent, Chip, IconButton, Stack, Tooltip, Typography, Button } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/Delete";
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import SchoolIcon from "@mui/icons-material/School";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
@@ -64,6 +65,21 @@ export function HabitCard({ habit }: { habit: Habit }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["habits"] }),
   });
 
+  const logMonthMutation = useMutation({
+    mutationFn: () => {
+      const now = new Date();
+      return habitApi.logMonth(habit.id, now.getFullYear(), now.getMonth() + 1);
+    },
+    onSuccess: (logs) => {
+      queryClient.invalidateQueries({ queryKey: ["habit-streak", habit.id] });
+      queryClient.invalidateQueries({ queryKey: ["calendar"] });
+      // XP начисляем один раз пакетом, а не за каждый день — иначе будет перебор с очками
+      if (logs.length > 0) {
+        addXp(HABIT_BASE_XP, `Привычка за месяц: ${habit.title}`);
+      }
+    },
+  });
+
   const CategoryIcon = categoryIcon[habit.category];
 
   return (
@@ -101,6 +117,19 @@ export function HabitCard({ habit }: { habit: Habit }) {
             {streak?.currentStreak ?? 0}
           </Typography>
         </Stack>
+
+        <Tooltip title="Отметить весь текущий месяц выполненным разом">
+          <span>
+            <IconButton
+              size="small"
+              onClick={() => logMonthMutation.mutate()}
+              disabled={logMonthMutation.isPending}
+              color={logMonthMutation.isSuccess ? "success" : "default"}
+            >
+              <CalendarMonthIcon fontSize="small" />
+            </IconButton>
+          </span>
+        </Tooltip>
 
         <Button
           size="small"

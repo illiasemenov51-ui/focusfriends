@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.UUID;
 
@@ -60,6 +61,17 @@ public class HabitController {
 
         HabitLog log = habitService.logCompletion(CurrentUserContext.get(), id, date);
         return ResponseEntity.ok(HabitLogResponse.from(log));
+    }
+
+    /** Отмечает привычку выполненной за весь месяц сразу (year=2026&month=7). Будущие дни игнорируются. */
+    @PatchMapping("/{id}/log/month")
+    public ResponseEntity<List<HabitLogResponse>> logMonth(
+            @PathVariable UUID id,
+            @RequestParam int year,
+            @RequestParam int month) {
+
+        List<HabitLog> logs = habitService.logMonth(CurrentUserContext.get(), id, YearMonth.of(year, month));
+        return ResponseEntity.ok(logs.stream().map(HabitLogResponse::from).toList());
     }
 
     @GetMapping("/{id}/streak")

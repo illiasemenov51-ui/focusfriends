@@ -17,6 +17,8 @@ public record SendNotificationRequest(
         @NotBlank
         String message,
 
-        NotificationChannel channel
+        NotificationChannel channel,
+
+        String recipientEmail
 ) {
 }

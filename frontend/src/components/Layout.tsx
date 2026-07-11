@@ -1,7 +1,8 @@
-import type { ReactNode } from "react";
-import { AppBar, Toolbar, Typography, Button, Container, Box, Avatar } from "@mui/material";
+import { useState, type ReactNode } from "react";
+import { AppBar, Toolbar, Typography, Button, Container, Box, Avatar, Alert } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { authApi } from "../api/authApi";
 import { XpBar } from "./XpBar";
 import { XpToast } from "./XpToast";
 import { LevelUpDialog } from "./LevelUpDialog";
@@ -9,10 +10,21 @@ import { LevelUpDialog } from "./LevelUpDialog";
 export function Layout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [resendState, setResendState] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   async function handleLogout() {
     await logout();
     navigate("/login");
+  }
+
+  async function handleResend() {
+    setResendState("sending");
+    try {
+      await authApi.resendVerification();
+      setResendState("sent");
+    } catch {
+      setResendState("error");
+    }
   }
 
   return (
@@ -53,6 +65,23 @@ export function Layout({ children }: { children: ReactNode }) {
         </Toolbar>
       </AppBar>
       <Container maxWidth="md" sx={{ py: { xs: 2.5, sm: 4 } }}>
+        {user && !user.emailVerified && (
+          <Alert
+            severity="warning"
+            sx={{ mb: 2.5 }}
+            action={
+              resendState === "sent" ? undefined : (
+                <Button color="inherit" size="small" onClick={handleResend} disabled={resendState === "sending"}>
+                  {resendState === "sending" ? "Отправляем..." : "Отправить письмо ещё раз"}
+                </Button>
+              )
+            }
+          >
+            {resendState === "sent"
+              ? "Письмо отправлено повторно — проверь почту (и папку «Спам»)."
+              : "Подтверди свою почту — мы отправили письмо со ссылкой при регистрации."}
+          </Alert>
+        )}
         {children}
       </Container>
       {user && <XpToast />}

@@ -93,7 +93,26 @@ curl -X POST http://localhost:8080/api/auth/register \
 
 Дальше в защищённых запросах: `-H "Authorization: Bearer <accessToken>"`.
 
-Остальные эндпоинты auth-service: `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`, `GET /api/users/me`, `PUT /api/users/me`, `GET /api/users/{id}` (публичный профиль).
+Остальные эндпоинты auth-service:
+
+- `POST /api/auth/login`
+- `POST /api/auth/refresh`
+- `POST /api/auth/logout`
+- `POST /api/auth/verify-email`
+- `POST /api/auth/resend-verification`
+- `POST /api/auth/request-password-reset`
+- `POST /api/auth/reset-password`
+- `GET /api/users/me`
+- `PUT /api/users/me`
+- `GET /api/users/{id}` (публичный профиль)
+
+Фронтовые страницы auth-flow:
+
+- `/login`
+- `/register`
+- `/forgot-password`
+- `/reset-password?token=...`
+- `/verify-email?token=...`
 
 ## API по сервисам
 

@@ -10,6 +10,7 @@ public record UserResponse(
         String name,
         String avatarUrl,
         String email,
+        boolean emailVerified,
         Instant createdAt
 ) {
     /** Полный профиль — только для владельца (/me). */
@@ -19,6 +20,7 @@ public record UserResponse(
                 user.getName(),
                 user.getAvatarUrl(),
                 user.getEmail(),
+                user.isEmailVerified(),
                 user.getCreatedAt()
         );
     }
@@ -30,6 +32,7 @@ public record UserResponse(
                 user.getName(),
                 user.getAvatarUrl(),
                 null,
+                user.isEmailVerified(),
                 user.getCreatedAt()
         );
     }

@@ -3,7 +3,10 @@ package dev.illiasemenov.focusfriends.auth.controller;
 import dev.illiasemenov.focusfriends.auth.dto.AuthResponse;
 import dev.illiasemenov.focusfriends.auth.dto.LoginRequest;
 import dev.illiasemenov.focusfriends.auth.dto.RefreshRequest;
+import dev.illiasemenov.focusfriends.auth.dto.RequestPasswordResetRequest;
 import dev.illiasemenov.focusfriends.auth.dto.RegisterRequest;
+import dev.illiasemenov.focusfriends.auth.dto.ResetPasswordRequest;
+import dev.illiasemenov.focusfriends.auth.dto.VerifyEmailRequest;
 import dev.illiasemenov.focusfriends.auth.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -43,6 +46,31 @@ public class AuthController {
     public ResponseEntity<Void> logout(Authentication authentication) {
         UUID userId = (UUID) authentication.getPrincipal();
         authService.logout(userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<Void> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
+        authService.verifyEmail(request.token());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/resend-verification")
+    public ResponseEntity<Void> resendVerification(Authentication authentication) {
+        UUID userId = (UUID) authentication.getPrincipal();
+        authService.resendVerification(userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/request-password-reset")
+    public ResponseEntity<Void> requestPasswordReset(@Valid @RequestBody RequestPasswordResetRequest request) {
+        authService.requestPasswordReset(request.email());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request.token(), request.newPassword());
         return ResponseEntity.noContent().build();
     }
 }

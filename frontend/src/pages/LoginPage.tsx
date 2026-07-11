@@ -100,6 +100,15 @@ export function LoginPage() {
             Зарегистрироваться
           </Link>
         </Typography>
+
+        <Typography variant="body2" sx={{ mt: 1, textAlign: "center" }}>
+          <Link
+            component={RouterLink}
+            to={redirectTo !== "/" ? `/forgot-password?redirect=${encodeURIComponent(redirectTo)}` : "/forgot-password"}
+          >
+            Забыли пароль?
+          </Link>
+        </Typography>
       </Paper>
     </Box>
   );
