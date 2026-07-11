@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "app")
 public record AppProperties(
         boolean mailEnabled,
-        String mailFrom
+        String mailFrom,
+        String mailTo
 ) {
 }

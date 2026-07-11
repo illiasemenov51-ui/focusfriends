@@ -27,23 +27,33 @@ spring:
       routes:
         - id: auth-service
           uri: ${AUTH_SERVICE_URL:http://localhost:8081}
+          order: 0
           predicates:
             - Path=/api/auth/**,/api/users/**
 
         - id: core-service
           uri: ${CORE_SERVICE_URL:http://localhost:8082}
+          order: 0
           predicates:
             - Path=/api/tasks/**,/api/habits/**
 
         - id: social-service
           uri: ${SOCIAL_SERVICE_URL:http://localhost:8083}
+          order: 0
           predicates:
             - Path=/api/friends/**,/api/groups/**,/api/leaderboard/**
 
         - id: notification-service
           uri: ${NOTIFICATION_SERVICE_URL:http://localhost:8084}
+          order: 0
           predicates:
             - Path=/api/notifications/**
+
+        - id: frontend
+          uri: ${FRONTEND_URL:http://localhost:3000}
+          order: 100
+          predicates:
+            - Path=/**
 
 app:
   jwt:

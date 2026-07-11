@@ -13,6 +13,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.UUID;
@@ -57,9 +58,7 @@ public class NotificationService {
 
     /**
      * Реальная отправка email — опциональна для MVP (флаг app.mail-enabled).
-     * Заметим: у notification-service нет email пользователя (только userId),
-     * поэтому в текущем виде это заготовка под будущую интеграцию с auth-service
-     * (получить email по userId) — сейчас просто логируем попытку.
+     * До появления интеграции с auth-service используется конфигурируемый fallback-recipient.
      */
     private void trySendEmail(SendNotificationRequest request) {
         if (!appProperties.mailEnabled()) {
@@ -68,16 +67,32 @@ public class NotificationService {
             return;
         }
 
+        String recipient = resolveRecipientEmail();
+        if (!StringUtils.hasText(recipient)) {
+            log.warn("Не удалось отправить email-уведомление userId={} — не задан ни app.mail-to, ни app.mail-from", request.userId());
+            return;
+        }
+
         try {
             SimpleMailMessage mail = new SimpleMailMessage();
             mail.setFrom(appProperties.mailFrom());
+            mail.setTo(recipient);
             mail.setSubject("FocusFriends: " + request.type());
             mail.setText(request.message());
-            // TODO: подставить реальный email получателя (нужна интеграция с auth-service)
             mailSender.send(mail);
         } catch (MailException e) {
             log.warn("Не удалось отправить email-уведомление userId={}: {}", request.userId(), e.getMessage());
         }
+    }
+
+    private String resolveRecipientEmail() {
+        if (StringUtils.hasText(appProperties.mailTo())) {
+            return appProperties.mailTo();
+        }
+        if (StringUtils.hasText(appProperties.mailFrom())) {
+            return appProperties.mailFrom();
+        }
+        return null;
     }
 
     public List<Notification> listForUser(UUID userId) {

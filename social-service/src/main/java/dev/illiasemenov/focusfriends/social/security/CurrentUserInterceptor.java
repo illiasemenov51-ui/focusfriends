@@ -3,6 +3,7 @@ package dev.illiasemenov.focusfriends.social.security;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.UUID;
@@ -44,7 +45,7 @@ public class CurrentUserInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(@NonNull HttpServletRequest request,
                                  @NonNull HttpServletResponse response,
-                                 @NonNull Object handler, Exception ex) {
+                                 @NonNull Object handler, @Nullable Exception ex) {
         CurrentUserContext.clear();
     }
 }

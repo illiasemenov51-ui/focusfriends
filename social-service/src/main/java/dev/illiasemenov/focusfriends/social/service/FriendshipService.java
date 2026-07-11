@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -39,7 +40,8 @@ public class FriendshipService {
                 .status(FriendshipStatus.PENDING)
                 .build();
 
-        return friendshipRepository.save(friendship);
+        Friendship saved = friendshipRepository.save(friendship);
+        return Objects.requireNonNull(saved);
     }
 
     @Transactional
@@ -47,13 +49,16 @@ public class FriendshipService {
         Friendship friendship = friendshipRepository.findById(requestId)
                 .orElseThrow(() -> new FriendshipNotFoundException(requestId));
 
-        if (!friendship.getAddresseeId().equals(currentUserId)) {
+        UUID addresseeId = Objects.requireNonNull(friendship.getAddresseeId());
+
+        if (!addresseeId.equals(currentUserId)) {
             // запрос существует, но принять его может только адресат — маскируем под 404
             throw new FriendshipNotFoundException(requestId);
         }
 
         friendship.setStatus(FriendshipStatus.ACCEPTED);
-        return friendshipRepository.save(friendship);
+        Friendship saved = friendshipRepository.save(friendship);
+        return Objects.requireNonNull(saved);
     }
 
     public List<Friendship> listAccepted(UUID userId) {

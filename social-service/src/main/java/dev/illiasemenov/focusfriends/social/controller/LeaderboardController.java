@@ -3,7 +3,6 @@ package dev.illiasemenov.focusfriends.social.controller;
 import dev.illiasemenov.focusfriends.social.dto.AwardPointsRequest;
 import dev.illiasemenov.focusfriends.social.dto.LeaderboardEntryResponse;
 import dev.illiasemenov.focusfriends.social.dto.LeaderboardPeriod;
-import dev.illiasemenov.focusfriends.social.repository.PointsEventRepository;
 import dev.illiasemenov.focusfriends.social.service.LeaderboardService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

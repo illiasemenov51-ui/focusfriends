@@ -31,6 +31,14 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
 
     private static final String BEARER_PREFIX = "Bearer ";
     private static final Pattern PUBLIC_USER_PROFILE = Pattern.compile("^/api/users/(?!me$)[^/]+$");
+    private static final List<String> FRONTEND_PUBLIC_PATHS = List.of(
+            "/",
+            "/index.html",
+            "/assets",
+            "/favicon.ico",
+            "/manifest.json",
+            "/robots.txt"
+    );
 
     private final JwtValidator jwtValidator;
     private final List<String> publicPaths;
@@ -75,6 +83,9 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
 
     private boolean isPublic(String path, String method) {
         if (publicPaths.contains(path)) {
+            return true;
+        }
+        if (FRONTEND_PUBLIC_PATHS.contains(path) || path.startsWith("/assets/")) {
             return true;
         }
         // публичный просмотр профиля: GET /api/users/{id}, но не /api/users/me
