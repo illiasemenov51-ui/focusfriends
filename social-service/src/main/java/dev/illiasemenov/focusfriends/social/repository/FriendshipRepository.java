@@ -23,4 +23,6 @@ public interface FriendshipRepository extends JpaRepository<Friendship, UUID> {
                                                @Param("status") FriendshipStatus status);
 
     boolean existsByRequesterIdAndAddresseeId(UUID requesterId, UUID addresseeId);
+
+    List<Friendship> findAllByAddresseeIdAndStatus(UUID addresseeId, FriendshipStatus status);
 }

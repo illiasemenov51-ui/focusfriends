@@ -67,4 +67,23 @@ public class HabitController {
         int streak = habitService.getCurrentStreak(CurrentUserContext.get(), id);
         return ResponseEntity.ok(new StreakResponse(id, streak));
     }
+
+    /** Свой календарь выполнения привычек за диапазон дат. */
+    @GetMapping("/calendar")
+    public ResponseEntity<List<CalendarDayResponse>> calendar(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+
+        return ResponseEntity.ok(habitService.getCalendar(CurrentUserContext.get(), from, to));
+    }
+
+    /** Календарь друга — только для принятых дружб. */
+    @GetMapping("/friends/{friendId}/calendar")
+    public ResponseEntity<List<CalendarDayResponse>> friendCalendar(
+            @PathVariable UUID friendId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+
+        return ResponseEntity.ok(habitService.getFriendCalendar(CurrentUserContext.get(), friendId, from, to));
+    }
 }

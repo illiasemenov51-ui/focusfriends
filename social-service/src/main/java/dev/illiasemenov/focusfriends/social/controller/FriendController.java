@@ -40,4 +40,13 @@ public class FriendController {
                 .toList();
         return ResponseEntity.ok(friends);
     }
+
+    /** Входящие заявки в друзья, ожидающие решения текущего пользователя. */
+    @GetMapping("/pending")
+    public ResponseEntity<List<FriendshipResponse>> pending() {
+        List<FriendshipResponse> pending = friendshipService.listPending(CurrentUserContext.get()).stream()
+                .map(FriendshipResponse::from)
+                .toList();
+        return ResponseEntity.ok(pending);
+    }
 }

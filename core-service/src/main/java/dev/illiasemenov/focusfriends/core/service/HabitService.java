@@ -1,10 +1,13 @@
 package dev.illiasemenov.focusfriends.core.service;
 
+import dev.illiasemenov.focusfriends.core.client.SocialServiceClient;
+import dev.illiasemenov.focusfriends.core.dto.CalendarDayResponse;
 import dev.illiasemenov.focusfriends.core.dto.CreateHabitRequest;
 import dev.illiasemenov.focusfriends.core.dto.UpdateHabitRequest;
 import dev.illiasemenov.focusfriends.core.entity.Habit;
 import dev.illiasemenov.focusfriends.core.entity.HabitFrequency;
 import dev.illiasemenov.focusfriends.core.entity.HabitLog;
+import dev.illiasemenov.focusfriends.core.exception.FriendAccessDeniedException;
 import dev.illiasemenov.focusfriends.core.exception.HabitNotFoundException;
 import dev.illiasemenov.focusfriends.core.repository.HabitLogRepository;
 import dev.illiasemenov.focusfriends.core.repository.HabitRepository;
@@ -12,18 +15,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class HabitService {
 
     private final HabitRepository habitRepository;
     private final HabitLogRepository habitLogRepository;
+    private final SocialServiceClient socialServiceClient;
 
-    public HabitService(HabitRepository habitRepository, HabitLogRepository habitLogRepository) {
+    public HabitService(HabitRepository habitRepository, HabitLogRepository habitLogRepository,
+                         SocialServiceClient socialServiceClient) {
         this.habitRepository = habitRepository;
         this.habitLogRepository = habitLogRepository;
+        this.socialServiceClient = socialServiceClient;
     }
 
     @Transactional
@@ -112,6 +122,40 @@ public class HabitService {
         }
 
         return streak;
+    }
+
+    /** Календарь выполнения привычек владельца за диапазон дат (включительно). */
+    public List<CalendarDayResponse> getCalendar(UUID ownerId, LocalDate from, LocalDate to) {
+        List<Habit> habits = habitRepository.findAllByUserId(ownerId);
+        if (habits.isEmpty()) {
+            return List.of();
+        }
+
+        Map<UUID, String> titleByHabitId = habits.stream()
+                .collect(Collectors.toMap(Habit::getId, Habit::getTitle));
+
+        List<HabitLog> logs = habitLogRepository.findAllByHabitIdInAndDateBetween(titleByHabitId.keySet(), from, to);
+
+        Map<LocalDate, List<String>> titlesByDate = new TreeMap<>();
+        for (HabitLog log : logs) {
+            if (!log.isCompleted()) continue;
+            titlesByDate
+                    .computeIfAbsent(log.getDate(), d -> new java.util.ArrayList<>())
+                    .add(titleByHabitId.get(log.getHabitId()));
+        }
+
+        return titlesByDate.entrySet().stream()
+                .map(e -> new CalendarDayResponse(e.getKey(), e.getValue().size(), e.getValue()))
+                .sorted(Comparator.comparing(CalendarDayResponse::date))
+                .toList();
+    }
+
+    /** Календарь друга — только если запрашивающий реально с ним в друзьях. */
+    public List<CalendarDayResponse> getFriendCalendar(UUID callerId, UUID friendId, LocalDate from, LocalDate to) {
+        if (!socialServiceClient.areFriends(callerId, friendId)) {
+            throw new FriendAccessDeniedException();
+        }
+        return getCalendar(friendId, from, to);
     }
 
     private Habit getOwnedHabit(UUID userId, UUID habitId) {

@@ -18,6 +18,11 @@ spring:
         format_sql: true
     open-in-view: false
 
+social:
+  service:
+    # Внутренний адрес social-service (по docker-сети или localhost для локального запуска)
+    url: ${SOCIAL_SERVICE_URL:http://localhost:8083}
+
 logging:
   level:
     dev.illiasemenov.focusfriends: DEBUG

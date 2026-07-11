@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -61,5 +62,19 @@ public class TaskController {
     public ResponseEntity<TaskResponse> complete(@PathVariable UUID id) {
         Task task = taskService.complete(CurrentUserContext.get(), id);
         return ResponseEntity.ok(TaskResponse.from(task));
+    }
+
+    /** Последние задачи друга (без description/deadline) — только для принятых дружб. */
+    @GetMapping("/friends/{friendId}/recent")
+    public ResponseEntity<List<FriendTaskResponse>> friendRecent(
+            @PathVariable UUID friendId,
+            @RequestParam(defaultValue = "5") int limit) {
+
+        List<FriendTaskResponse> tasks = taskService
+                .listRecentForFriend(CurrentUserContext.get(), friendId, limit).stream()
+                .map(FriendTaskResponse::from)
+                .toList();
+
+        return ResponseEntity.ok(tasks);
     }
 }

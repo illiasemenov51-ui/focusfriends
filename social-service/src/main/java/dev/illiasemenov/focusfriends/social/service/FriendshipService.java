@@ -64,4 +64,9 @@ public class FriendshipService {
     public List<Friendship> listAccepted(UUID userId) {
         return friendshipRepository.findAllByUserIdAndStatus(userId, FriendshipStatus.ACCEPTED);
     }
+
+    /** Входящие заявки в друзья, ожидающие решения текущего пользователя. */
+    public List<Friendship> listPending(UUID userId) {
+        return friendshipRepository.findAllByAddresseeIdAndStatus(userId, FriendshipStatus.PENDING);
+    }
 }

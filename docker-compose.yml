@@ -41,14 +41,32 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      social-service:
+        condition: service_started
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: core_db
       DB_USER: focusfriends
       DB_PASSWORD: focusfriends
+      SOCIAL_SERVICE_URL: http://social-service:8083
     ports:
       - "8082:8082"
+
+  social-service:
+    build: ./social-service
+    container_name: focusfriends-social-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: social_db
+      DB_USER: focusfriends
+      DB_PASSWORD: focusfriends
+    ports:
+      - "8083:8083"
 
   frontend:
     build: ./frontend
@@ -64,10 +82,12 @@ services:
     depends_on:
       - auth-service
       - core-service
+      - social-service
       - frontend
     environment:
       AUTH_SERVICE_URL: http://auth-service:8081
       CORE_SERVICE_URL: http://core-service:8082
+      SOCIAL_SERVICE_URL: http://social-service:8083
       FRONTEND_URL: http://frontend:80
       JWT_SECRET: ${JWT_SECRET:-this-is-a-dev-only-secret-key-change-me-in-production-please-32bytes}
     ports:

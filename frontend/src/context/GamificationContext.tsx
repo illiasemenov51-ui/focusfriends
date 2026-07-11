@@ -9,6 +9,7 @@ import {
 } from "react";
 import { leaderboardApi } from "../api/leaderboardApi";
 import { useAuth } from "./AuthContext";
+import { computeLevelInfo } from "../utils/level";
 
 export interface XpGainEvent {
   id: number;
@@ -37,31 +38,6 @@ interface GamificationContextValue extends GamificationState {
 }
 
 const GamificationContext = createContext<GamificationContextValue | undefined>(undefined);
-
-// Сколько XP нужно, чтобы пройти конкретно этот уровень (растёт линейно).
-function xpRequiredForLevel(level: number): number {
-  return 100 + (level - 1) * 25;
-}
-
-function computeLevelInfo(totalXp: number): GamificationState {
-  let level = 1;
-  let remaining = totalXp;
-  let needed = xpRequiredForLevel(level);
-
-  while (remaining >= needed) {
-    remaining -= needed;
-    level += 1;
-    needed = xpRequiredForLevel(level);
-  }
-
-  return {
-    totalXp,
-    level,
-    currentLevelXp: remaining,
-    xpForNextLevel: needed,
-    progress: needed > 0 ? remaining / needed : 0,
-  };
-}
 
 function storageKey(userId: string): string {
   return `focusfriends_xp_${userId}`;

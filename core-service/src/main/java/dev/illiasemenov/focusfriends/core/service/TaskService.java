@@ -1,28 +1,35 @@
 package dev.illiasemenov.focusfriends.core.service;
 
+import dev.illiasemenov.focusfriends.core.client.SocialServiceClient;
 import dev.illiasemenov.focusfriends.core.dto.CreateTaskRequest;
 import dev.illiasemenov.focusfriends.core.dto.UpdateTaskRequest;
 import dev.illiasemenov.focusfriends.core.entity.Task;
 import dev.illiasemenov.focusfriends.core.entity.TaskPriority;
 import dev.illiasemenov.focusfriends.core.entity.TaskStatus;
+import dev.illiasemenov.focusfriends.core.exception.FriendAccessDeniedException;
 import dev.illiasemenov.focusfriends.core.exception.TaskNotFoundException;
 import dev.illiasemenov.focusfriends.core.repository.TaskRepository;
 import dev.illiasemenov.focusfriends.core.repository.TaskSpecifications;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final SocialServiceClient socialServiceClient;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, SocialServiceClient socialServiceClient) {
         this.taskRepository = taskRepository;
+        this.socialServiceClient = socialServiceClient;
     }
 
     @Transactional
@@ -82,6 +89,19 @@ public class TaskService {
         Task task = getOwnedTask(userId, taskId);
         task.setStatus(TaskStatus.DONE);
         return taskRepository.save(task);
+    }
+
+    /** Последние задачи друга — только если запрашивающий и friendId реально в друзьях. */
+    public List<Task> listRecentForFriend(UUID callerId, UUID friendId, int limit) {
+        if (!socialServiceClient.areFriends(callerId, friendId)) {
+            throw new FriendAccessDeniedException();
+        }
+
+        int safeLimit = Math.min(Math.max(limit, 1), 20);
+        Pageable pageable = PageRequest.of(0, safeLimit, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Specification<Task> spec = TaskSpecifications.belongsToUser(friendId);
+
+        return taskRepository.findAll(spec, pageable).getContent();
     }
 
     /**

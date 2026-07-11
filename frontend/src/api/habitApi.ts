@@ -1,5 +1,6 @@
 import { apiClient } from "./client";
 import type { CreateHabitRequest, Habit, HabitLogResponse, StreakResponse } from "../types/habit";
+import type { CalendarDay } from "../types/friend";
 
 export const habitApi = {
   list: async (): Promise<Habit[]> => {
@@ -23,6 +24,20 @@ export const habitApi = {
 
   getStreak: async (id: string): Promise<StreakResponse> => {
     const response = await apiClient.get<StreakResponse>(`/api/habits/${id}/streak`);
+    return response.data;
+  },
+
+  // Свой календарь выполнения привычек за диапазон дат (YYYY-MM-DD).
+  getCalendar: async (from: string, to: string): Promise<CalendarDay[]> => {
+    const response = await apiClient.get<CalendarDay[]>("/api/habits/calendar", { params: { from, to } });
+    return response.data;
+  },
+
+  // Календарь друга за диапазон дат — только для принятых дружб.
+  getFriendCalendar: async (friendId: string, from: string, to: string): Promise<CalendarDay[]> => {
+    const response = await apiClient.get<CalendarDay[]>(`/api/habits/friends/${friendId}/calendar`, {
+      params: { from, to },
+    });
     return response.data;
   },
 };
