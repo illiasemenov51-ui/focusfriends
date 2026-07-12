@@ -1,12 +1,34 @@
 import { createTheme } from "@mui/material/styles";
 
+// Классический Terraria-инвентарь: "выпуклая" рамка (светлый край сверху-слева,
+// тёмный снизу-справа) для кнопок/слотов, и "вдавленная" (наоборот) для
+// панелей-контейнеров — имитирует объём в 1 пиксель без градиентов.
+const BEVEL_LIGHT = "#8A6B3E";
+const BEVEL_DARK = "#0D0A06";
+const STONE = "#2B2118";
+const STONE_DARK = "#1A140C";
+
+const outsetBevel = {
+  borderTopColor: BEVEL_LIGHT,
+  borderLeftColor: BEVEL_LIGHT,
+  borderBottomColor: BEVEL_DARK,
+  borderRightColor: BEVEL_DARK,
+};
+
+const insetBevel = {
+  borderTopColor: BEVEL_DARK,
+  borderLeftColor: BEVEL_DARK,
+  borderBottomColor: BEVEL_LIGHT,
+  borderRightColor: BEVEL_LIGHT,
+};
+
 export const theme = createTheme({
   palette: {
-    primary: { main: "#39FF14", light: "#8DFF7A", dark: "#18B50B", contrastText: "#0B0E14" },
-    secondary: { main: "#FF206E", light: "#FF6C9F", dark: "#B80F49", contrastText: "#FFFFFF" },
-    warning: { main: "#FFD23F", contrastText: "#0B0E14" },
-    background: { default: "#0B0E14", paper: "#141A24" },
-    text: { primary: "#E9F3E6", secondary: "#8FB39A", disabled: "#54605A" },
+    primary: { main: "#D9A441", light: "#F0C97A", dark: "#9C731F", contrastText: "#1A140C" },
+    secondary: { main: "#C1443B", light: "#E17870", dark: "#832019", contrastText: "#F0E4C8" },
+    warning: { main: "#7CB342", contrastText: "#1A140C" },
+    background: { default: "#100C08", paper: STONE },
+    text: { primary: "#F0E4C8", secondary: "#B8A278", disabled: "#5A5040" },
   },
   shape: {
     borderRadius: 0,
@@ -20,9 +42,9 @@ export const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         colorPrimary: {
-          backgroundColor: "#141A24",
+          backgroundColor: STONE,
           backgroundImage: "none",
-          borderBottom: "3px solid #39FF14",
+          borderBottom: `4px solid ${STONE_DARK}`,
           boxShadow: "0 4px 0 #000",
         },
       },
@@ -32,12 +54,44 @@ export const theme = createTheme({
         root: {
           borderRadius: 0,
           textTransform: "none",
-          border: "2px solid #0B0E14",
+          backgroundColor: "#3D3021",
+          color: "#F0E4C8",
+          borderWidth: 3,
+          borderStyle: "solid",
+          ...outsetBevel,
           boxShadow: "3px 3px 0 #000",
           transition: "transform 80ms steps(2, end), box-shadow 80ms steps(2, end)",
           "&:hover": {
+            backgroundColor: "#4A3B2A",
             boxShadow: "5px 5px 0 #000",
             transform: "translate(-2px, -2px)",
+          },
+          "&:active": {
+            ...insetBevel,
+            boxShadow: "1px 1px 0 #000",
+            transform: "translate(2px, 2px)",
+          },
+        },
+        outlined: {
+          borderWidth: 3,
+          ...outsetBevel,
+          "&:hover": { borderWidth: 3, ...outsetBevel },
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 0,
+          backgroundColor: "#3D3021",
+          borderWidth: 3,
+          borderStyle: "solid",
+          ...outsetBevel,
+          boxShadow: "2px 2px 0 #000",
+          "&:hover": {
+            backgroundColor: "#4A3B2A",
+            transform: "translate(-1px, -1px)",
+            boxShadow: "3px 3px 0 #000",
           },
         },
       },
@@ -45,8 +99,10 @@ export const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          backgroundColor: "#141A24",
-          border: "3px solid #263241",
+          backgroundColor: "rgba(43, 33, 24, 0.94)",
+          borderWidth: 3,
+          borderStyle: "solid",
+          ...outsetBevel,
           boxShadow: "5px 5px 0 #000",
           transition: "transform 100ms steps(2, end), box-shadow 100ms steps(2, end)",
         },
@@ -59,7 +115,11 @@ export const theme = createTheme({
           fontFamily: '"Press Start 2P", "Courier New", monospace',
           fontSize: 9,
           height: 24,
+          backgroundColor: STONE_DARK,
+          color: "#F0E4C8",
           borderWidth: 2,
+          borderStyle: "solid",
+          ...outsetBevel,
         },
       },
     },
@@ -67,19 +127,23 @@ export const theme = createTheme({
       styleOverrides: {
         indicator: {
           height: 4,
-          backgroundColor: "#39FF14",
+          backgroundColor: "#D9A441",
+        },
+        root: {
+          backgroundColor: "rgba(26, 20, 12, 0.6)",
+          borderBottom: `3px solid ${STONE_DARK}`,
         },
       },
     },
     MuiTab: {
       styleOverrides: {
         root: {
-          color: "#8FB39A",
+          color: "#B8A278",
           fontFamily: '"Press Start 2P", "Courier New", monospace',
           fontSize: 10,
-          minHeight: 44,
+          minHeight: 48,
           "&.Mui-selected": {
-            color: "#39FF14",
+            color: "#D9A441",
           },
         },
       },
@@ -88,17 +152,17 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 0,
-          backgroundColor: "#0B0E14",
-          color: "#E9F3E6",
+          backgroundColor: STONE_DARK,
+          color: "#F0E4C8",
           "& .MuiOutlinedInput-notchedOutline": {
-            borderWidth: 2,
-            borderColor: "#263241",
+            borderWidth: 3,
+            borderColor: BEVEL_DARK,
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#39FF14",
+            borderColor: "#D9A441",
           },
           "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#39FF14",
+            borderColor: "#D9A441",
           },
         },
       },
@@ -106,12 +170,61 @@ export const theme = createTheme({
     MuiInputLabel: {
       styleOverrides: {
         root: {
-          color: "#8FB39A",
+          color: "#B8A278",
           "&.Mui-focused": {
-            color: "#39FF14",
+            color: "#D9A441",
           },
+        },
+      },
+    },
+    MuiLinearProgress: {
+      styleOverrides: {
+        root: {
+          borderRadius: 0,
+          backgroundColor: STONE_DARK,
+          borderWidth: 2,
+          borderStyle: "solid",
+          ...insetBevel,
+        },
+        bar: {
+          borderRadius: 0,
+        },
+      },
+    },
+    MuiAvatar: {
+      styleOverrides: {
+        root: {
+          borderRadius: 0,
+          borderWidth: 3,
+          borderStyle: "solid",
+          ...outsetBevel,
+          boxShadow: "2px 2px 0 #000",
+        },
+      },
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          borderRadius: 0,
+          backgroundColor: STONE_DARK,
+          border: `2px solid ${BEVEL_LIGHT}`,
+          fontFamily: '"VT323", monospace',
+          fontSize: 14,
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: STONE,
+          borderWidth: 4,
+          borderStyle: "solid",
+          ...outsetBevel,
+          boxShadow: "8px 8px 0 #000",
         },
       },
     },
   },
 });
+
+export { outsetBevel, insetBevel, BEVEL_LIGHT, BEVEL_DARK, STONE, STONE_DARK };

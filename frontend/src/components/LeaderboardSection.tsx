@@ -55,10 +55,10 @@ export function LeaderboardSection() {
     <Box>
       <Box sx={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", mb: 1.5 }}>
         <Typography className="pixel-heading" sx={{ fontSize: 14 }}>
-          RANKING
+          РЕЙТИНГ
         </Typography>
         <Typography className="pixel-muted" sx={{ fontSize: 18 }}>
-          friends XP
+          очки друзей
         </Typography>
       </Box>
 
@@ -92,8 +92,8 @@ export function LeaderboardSection() {
                 style={{ animationDelay: `${index * 0.05}s` }}
                 sx={{
                   borderColor: isMe ? "primary.main" : undefined,
-                  borderWidth: isMe ? 2 : 1,
-                  bgcolor: isMe ? "rgba(57, 255, 20, 0.08)" : undefined,
+                  borderWidth: isMe ? 3 : undefined,
+                  bgcolor: isMe ? "rgba(217, 164, 65, 0.1)" : undefined,
                 }}
               >
                 <CardContent
@@ -124,8 +124,6 @@ export function LeaderboardSection() {
                       width: 36,
                       height: 36,
                       bgcolor: "secondary.main",
-                      border: "2px solid #0B0E14",
-                      boxShadow: "2px 2px 0 #000",
                     }}
                   >
                     {entry.name.charAt(0).toUpperCase()}

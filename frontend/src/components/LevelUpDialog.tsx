@@ -15,10 +15,10 @@ export function LevelUpDialog() {
             textAlign: "center",
             px: 4,
             py: 5,
-            bgcolor: "#141A24",
-            color: "#E9F3E6",
+            bgcolor: "#2B2118",
+            color: "#F0E4C8",
             minWidth: 300,
-            border: "3px solid #39FF14",
+            border: "4px solid #D9A441",
             boxShadow: "6px 6px 0 #000",
           },
         },
@@ -35,7 +35,7 @@ export function LevelUpDialog() {
             fontFamily: '"Press Start 2P", monospace',
             fontSize: "0.9rem",
             mt: 2,
-            color: "#39FF14",
+            color: "#D9A441",
           }}
         >
           НОВЫЙ УРОВЕНЬ!
@@ -45,7 +45,7 @@ export function LevelUpDialog() {
             fontFamily: '"Press Start 2P", monospace',
             fontSize: "2rem",
             my: 2,
-            color: "#FF206E",
+            color: "#C1443B",
           }}
         >
           LV.{levelUpEvent?.level}

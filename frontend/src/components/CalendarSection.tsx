@@ -172,17 +172,17 @@ export function CalendarSection() {
                 className="app-card"
                 sx={{
                   opacity: inMonth ? 1 : 0.35,
-                  border: isToday(day) ? "2px solid #39FF14" : undefined,
+                  border: isToday(day) ? "3px solid #D9A441" : undefined,
                 }}
               >
                 <CardContent sx={{ p: "6px !important", minHeight: 56 }}>
                   <Typography sx={{ fontSize: 14, color: "text.secondary" }}>{format(day, "d")}</Typography>
                   <Stack direction="row" spacing={0.5} sx={{ mt: 0.5, flexWrap: "wrap" }}>
                     {Array.from({ length: Math.min(mine?.count ?? 0, 5) }).map((_, i) => (
-                      <Box key={`m-${i}`} sx={{ width: 8, height: 8, bgcolor: "primary.main", border: "1px solid #0B0E14" }} />
+                      <Box key={`m-${i}`} sx={{ width: 8, height: 8, bgcolor: "primary.main", border: "1px solid #0D0A06" }} />
                     ))}
                     {Array.from({ length: Math.min(theirs?.count ?? 0, 5) }).map((_, i) => (
-                      <Box key={`f-${i}`} sx={{ width: 8, height: 8, bgcolor: "secondary.main", border: "1px solid #0B0E14" }} />
+                      <Box key={`f-${i}`} sx={{ width: 8, height: 8, bgcolor: "secondary.main", border: "1px solid #0D0A06" }} />
                     ))}
                   </Stack>
                 </CardContent>
@@ -194,14 +194,14 @@ export function CalendarSection() {
 
       <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
         <Stack direction="row" spacing={0.75} sx={{ alignItems: "center" }}>
-          <Box sx={{ width: 10, height: 10, bgcolor: "primary.main", border: "1px solid #0B0E14" }} />
+          <Box sx={{ width: 10, height: 10, bgcolor: "primary.main", border: "1px solid #0D0A06" }} />
           <Typography className="pixel-muted" sx={{ fontSize: 14 }}>
             твои привычки
           </Typography>
         </Stack>
         {friendId && (
           <Stack direction="row" spacing={0.75} sx={{ alignItems: "center" }}>
-            <Box sx={{ width: 10, height: 10, bgcolor: "secondary.main", border: "1px solid #0B0E14" }} />
+            <Box sx={{ width: 10, height: 10, bgcolor: "secondary.main", border: "1px solid #0D0A06" }} />
             <Typography className="pixel-muted" sx={{ fontSize: 14 }}>
               {friendName ?? "друг"}
             </Typography>

@@ -9,16 +9,18 @@ import {
   Chip,
   CircularProgress,
   Collapse,
+  IconButton,
   LinearProgress,
+  Snackbar,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CheckIcon from "@mui/icons-material/Check";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import LinkIcon from "@mui/icons-material/Link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { friendApi } from "../api/friendApi";
 import { leaderboardApi } from "../api/leaderboardApi";
@@ -43,19 +45,13 @@ export function FriendsSection() {
   const queryClient = useQueryClient();
   const [expandedFriendId, setExpandedFriendId] = useState<string | null>(null);
   const [newFriendId, setNewFriendId] = useState("");
-  const [copiedField, setCopiedField] = useState<"id" | "link" | null>(null);
+  const [copied, setCopied] = useState(false);
 
-  async function copyToClipboard(text: string, field: "id" | "link") {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedField(field);
-      setTimeout(() => setCopiedField((current) => (current === field ? null : current)), 2000);
-    } catch {
-      // буфер обмена может быть недоступен в некоторых браузерах
-    }
+  async function handleCopyMyId() {
+    if (!user) return;
+    await navigator.clipboard.writeText(user.id);
+    setCopied(true);
   }
-
-  const inviteLink = user ? `${window.location.origin}/invite/${user.id}` : "";
 
   const friendsQuery = useQuery({
     queryKey: ["friends", "accepted", user?.id],
@@ -151,46 +147,37 @@ export function FriendsSection() {
         </Typography>
       </Box>
 
-      {/* Мой ID и ссылка-приглашение */}
-      {user && (
-        <Card variant="outlined" className="app-card" sx={{ mb: 2 }}>
-          <CardContent sx={{ pb: "16px !important" }}>
-            <Typography className="pixel-muted" sx={{ fontSize: 16, mb: 1 }}>
-              твой ID — поделись, чтобы тебя добавили в друзья
-            </Typography>
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ mb: 1.5 }}>
-              <TextField
-                size="small"
-                value={user.id}
-                slotProps={{ input: { readOnly: true } }}
-                sx={{ flexGrow: 1, minWidth: 240 }}
-              />
-              <Button
-                variant="outlined"
-                startIcon={<ContentCopyIcon />}
-                onClick={() => copyToClipboard(user.id, "id")}
-              >
-                {copiedField === "id" ? "Скопировано!" : "Копировать ID"}
-              </Button>
-            </Stack>
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
-              <TextField
-                size="small"
-                value={inviteLink}
-                slotProps={{ input: { readOnly: true } }}
-                sx={{ flexGrow: 1, minWidth: 240 }}
-              />
-              <Button
-                variant="contained"
-                startIcon={<LinkIcon />}
-                onClick={() => copyToClipboard(inviteLink, "link")}
-              >
-                {copiedField === "link" ? "Скопировано!" : "Скопировать ссылку"}
-              </Button>
-            </Stack>
-          </CardContent>
-        </Card>
-      )}
+      {/* Свой ID — поделиться с другом */}
+      <Card variant="outlined" className="app-card" sx={{ mb: 2 }}>
+        <CardContent
+          sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap", "&:last-child": { pb: 2 } }}
+        >
+          <Typography className="pixel-muted" sx={{ fontSize: 16, flexShrink: 0 }}>
+            твой ID:
+          </Typography>
+          <Box
+            className="pixel-slot"
+            sx={{
+              flexGrow: 1,
+              minWidth: 220,
+              justifyContent: "flex-start",
+              px: 1.25,
+              py: 0.75,
+              fontSize: 16,
+              color: "#F0E4C8",
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {user?.id}
+          </Box>
+          <Tooltip title="Скопировать ID">
+            <IconButton size="small" onClick={handleCopyMyId} aria-label="Скопировать ID">
+              <ContentCopyIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </CardContent>
+      </Card>
 
       {/* Добавить друга по id */}
       <Card variant="outlined" className="app-card" sx={{ mb: 2 }}>
@@ -272,26 +259,19 @@ export function FriendsSection() {
                         width: 40,
                         height: 40,
                         bgcolor: "secondary.main",
-                        border: "2px solid #0B0E14",
-                        boxShadow: "2px 2px 0 #000",
                       }}
                     >
                       {friend.name.charAt(0).toUpperCase()}
                     </Avatar>
 
                     <Box
+                      className="pixel-slot"
                       sx={{
                         width: 30,
                         height: 30,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
                         fontFamily: '"Press Start 2P", monospace',
                         fontSize: 11,
-                        color: "#0B0E14",
-                        bgcolor: "primary.main",
-                        border: "2px solid #0B0E14",
-                        boxShadow: "2px 2px 0 #000",
+                        color: "#F0C97A",
                         flexShrink: 0,
                       }}
                     >
@@ -306,8 +286,6 @@ export function FriendsSection() {
                         sx={{
                           height: 8,
                           mt: 0.5,
-                          bgcolor: "#0B0E14",
-                          border: "2px solid #0B0E14",
                           "& .MuiLinearProgress-bar": { backgroundColor: "secondary.main" },
                         }}
                       />
@@ -327,7 +305,7 @@ export function FriendsSection() {
                   </Box>
 
                   <Collapse in={isExpanded}>
-                    <Box sx={{ mt: 1.5, pt: 1.5, borderTop: "2px dashed #263241" }}>
+                    <Box sx={{ mt: 1.5, pt: 1.5, borderTop: "2px dashed #8A6B3E" }}>
                       {friendTasksQuery.isLoading ? (
                         <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
                           <CircularProgress size={20} />
@@ -361,6 +339,13 @@ export function FriendsSection() {
           Пока нет друзей — отправь заявку по id выше, чтобы начать соревноваться
         </Typography>
       )}
+
+      <Snackbar
+        open={copied}
+        autoHideDuration={2000}
+        onClose={() => setCopied(false)}
+        message="ID скопирован"
+      />
     </Box>
   );
 }

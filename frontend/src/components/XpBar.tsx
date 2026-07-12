@@ -21,20 +21,14 @@ export function XpBar() {
     <Tooltip title={`${currentLevelXp} / ${xpForNextLevel} XP до следующего уровня`}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 170 }}>
         <Box
-          className={pop ? "level-badge-pop" : undefined}
+          className={pop ? "level-badge-pop pixel-slot" : "pixel-slot"}
           sx={{
             width: 32,
             height: 32,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
             fontFamily: '"Press Start 2P", monospace',
             fontWeight: 400,
             fontSize: 12,
-            color: "#0B0E14",
-            bgcolor: "#39FF14",
-            border: "2px solid #0B0E14",
-            boxShadow: "2px 2px 0 #000",
+            color: "#F0C97A",
             flexShrink: 0,
           }}
         >
@@ -46,14 +40,12 @@ export function XpBar() {
             value={Math.min(progress * 100, 100)}
             sx={{
               height: 10,
-              bgcolor: "#0B0E14",
-              border: "2px solid #0B0E14",
               "& .MuiLinearProgress-bar": {
-                backgroundColor: "#FF206E",
+                backgroundColor: "#7CB342",
               },
             }}
           />
-          <Typography variant="caption" sx={{ color: "#8FB39A", lineHeight: 1.4, fontSize: 13 }}>
+          <Typography variant="caption" sx={{ color: "#B8A278", lineHeight: 1.4, fontSize: 13 }}>
             {currentLevelXp} / {xpForNextLevel} XP
           </Typography>
         </Box>

@@ -1,7 +1,6 @@
-import { Avatar, Box, Card, CardContent, Chip, IconButton, Stack, Tooltip, Typography, Button } from "@mui/material";
+import { Avatar, Box, Card, CardContent, Chip, IconButton, Stack, Typography, Button } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/Delete";
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import SchoolIcon from "@mui/icons-material/School";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
@@ -30,10 +29,10 @@ const categoryIcon: Record<Habit["category"], typeof SchoolIcon> = {
 
 const categoryColor: Record<Habit["category"], string> = {
   STUDY: "#4CC9F0",
-  SPORT: "#39FF14",
-  READING: "#FFD23F",
-  CODING: "#FF206E",
-  OTHER: "#8FB39A",
+  SPORT: "#7CB342",
+  READING: "#D9A441",
+  CODING: "#C1443B",
+  OTHER: "#B8A278",
 };
 
 // Базовый опыт за отметку привычки + бонус за длину серии (макс. +30).
@@ -65,21 +64,6 @@ export function HabitCard({ habit }: { habit: Habit }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["habits"] }),
   });
 
-  const logMonthMutation = useMutation({
-    mutationFn: () => {
-      const now = new Date();
-      return habitApi.logMonth(habit.id, now.getFullYear(), now.getMonth() + 1);
-    },
-    onSuccess: (logs) => {
-      queryClient.invalidateQueries({ queryKey: ["habit-streak", habit.id] });
-      queryClient.invalidateQueries({ queryKey: ["calendar"] });
-      // XP начисляем один раз пакетом, а не за каждый день — иначе будет перебор с очками
-      if (logs.length > 0) {
-        addXp(HABIT_BASE_XP, `Привычка за месяц: ${habit.title}`);
-      }
-    },
-  });
-
   const CategoryIcon = categoryIcon[habit.category];
 
   return (
@@ -96,11 +80,9 @@ export function HabitCard({ habit }: { habit: Habit }) {
         <Avatar
           sx={{
             bgcolor: categoryColor[habit.category],
-            color: "#0B0E14",
+            color: "#1A140C",
             width: 38,
             height: 38,
-            border: "2px solid #0B0E14",
-            boxShadow: "2px 2px 0 #000",
           }}
         >
           <CategoryIcon fontSize="small" />
@@ -117,19 +99,6 @@ export function HabitCard({ habit }: { habit: Habit }) {
             {streak?.currentStreak ?? 0}
           </Typography>
         </Stack>
-
-        <Tooltip title="Отметить весь текущий месяц выполненным разом">
-          <span>
-            <IconButton
-              size="small"
-              onClick={() => logMonthMutation.mutate()}
-              disabled={logMonthMutation.isPending}
-              color={logMonthMutation.isSuccess ? "success" : "default"}
-            >
-              <CalendarMonthIcon fontSize="small" />
-            </IconButton>
-          </span>
-        </Tooltip>
 
         <Button
           size="small"

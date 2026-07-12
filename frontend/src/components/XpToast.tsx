@@ -35,8 +35,8 @@ export function XpToast() {
           key={toast.id}
           className="xp-toast"
           sx={{
-            bgcolor: "#39FF14",
-            color: "#0B0E14",
+            bgcolor: "#D9A441",
+            color: "#1A140C",
             px: 1.75,
             py: 1,
             boxShadow: "4px 4px 0 #000",
