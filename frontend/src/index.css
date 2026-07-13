@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Inter:wght@400;600;700&display=swap");
 
 * {
   box-sizing: border-box;
@@ -7,26 +7,58 @@
 body {
   margin: 0;
   image-rendering: pixelated;
-  background:
-    repeating-linear-gradient(
-      45deg,
-      rgba(0, 0, 0, 0.12) 0px,
-      rgba(0, 0, 0, 0.12) 2px,
-      transparent 2px,
-      transparent 10px
-    ),
-    repeating-linear-gradient(
-      -45deg,
-      rgba(0, 0, 0, 0.1) 0px,
-      rgba(0, 0, 0, 0.1) 2px,
-      transparent 2px,
-      transparent 10px
-    ),
-    #100c08;
   background-size: 20px 20px;
 }
 
-body::before {
+/* --- Фоновые паттерны по выбранной теме — цвет фона задаёт MUI (CssBaseline
+   из палитры), тут только декоративный слой поверх. --- */
+
+html[data-bg-pattern="warm-noise"] body {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.06) 0px, rgba(0, 0, 0, 0.06) 2px, transparent 2px, transparent 10px),
+    repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.05) 0px, rgba(0, 0, 0, 0.05) 2px, transparent 2px, transparent 10px);
+  background-size: 20px 20px;
+}
+
+html[data-bg-pattern="stone"] body {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.1) 0px, rgba(0, 0, 0, 0.1) 3px, transparent 3px, transparent 14px),
+    repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0.08) 0px, rgba(0, 0, 0, 0.08) 3px, transparent 3px, transparent 14px);
+  background-size: 28px 28px;
+}
+
+html[data-bg-pattern="checkerboard"] body {
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.05) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.05) 75%);
+  background-size: 48px 48px;
+  background-position: 0 0, 0 24px, 24px -24px, -24px 0px;
+}
+
+html[data-bg-pattern="dots"] body {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+
+html[data-bg-pattern="waves"] body {
+  background-image: repeating-radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.05) 0px, transparent 2px, transparent 26px);
+  background-size: 52px 52px;
+}
+
+html[data-bg-pattern="scanlines"] body {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.04) 0px,
+    rgba(255, 255, 255, 0.04) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+/* Скан-линия поверх контента — только для тем с "экранной" эстетикой. */
+html[data-bg-pattern="scanlines"] body::before {
   content: "";
   position: fixed;
   inset: 0;
@@ -34,8 +66,8 @@ body::before {
   z-index: 9999;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.16) 0px,
-    rgba(0, 0, 0, 0.16) 1px,
+    rgba(0, 0, 0, 0.08) 0px,
+    rgba(0, 0, 0, 0.08) 1px,
     transparent 1px,
     transparent 3px
   );
@@ -65,8 +97,8 @@ body::before {
 
 .xp-toast {
   animation: xp-toast-in 1.7s steps(6, end) forwards;
-  font-family: "Press Start 2P", monospace;
-  border: 3px solid #0d0a06;
+  font-family: var(--tf-heading-font, "Press Start 2P", monospace);
+  border: 2px solid var(--tf-bevel-dark, #241608);
 }
 
 @keyframes confetti-fall {
@@ -86,7 +118,7 @@ body::before {
   left: calc(50% + (var(--i) - 6) * 16px);
   width: 8px;
   height: 8px;
-  background: #d9a441;
+  background: var(--tf-primary, #f0b65c);
   border-radius: 0;
   animation: confetti-fall 1.3s steps(8, end) forwards;
   animation-delay: calc(var(--i) * 0.05s);
@@ -94,11 +126,11 @@ body::before {
 }
 
 .confetti-piece:nth-of-type(2n) {
-  background: #c1443b;
+  background: var(--tf-secondary, #7fbf8f);
 }
 
 .confetti-piece:nth-of-type(3n) {
-  background: #7cb342;
+  background: var(--tf-primary-light, #e08669);
 }
 
 @keyframes level-badge-pop {
@@ -135,44 +167,47 @@ body::before {
 }
 
 .app-card:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 7px 7px 0 #000 !important;
-  border-color: #d9a441 !important;
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.35) !important;
+  border-color: var(--tf-primary, #f0b65c) !important;
 }
 
 .pixel-panel {
-  border: 3px solid #0d0a06;
-  border-top-color: #8a6b3e;
-  border-left-color: #8a6b3e;
-  background: rgba(43, 33, 24, 0.94);
-  box-shadow: 5px 5px 0 #000;
+  border: var(--tf-border-width, 2px) solid var(--tf-bevel-dark, #241608);
+  border-top-color: var(--tf-bevel-light, #a67c4e);
+  border-left-color: var(--tf-bevel-light, #a67c4e);
+  background: var(--tf-panel, #3a2c1f);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.35);
+  border-radius: var(--tf-radius, 0);
 }
 
 .pixel-heading {
-  font-family: "Press Start 2P", monospace;
-  color: #d9a441;
+  font-family: var(--tf-heading-font, "Press Start 2P", monospace);
+  color: var(--tf-primary, #f0b65c);
   letter-spacing: 0;
 }
 
 .pixel-muted {
-  color: #b8a278;
+  color: var(--tf-text-secondary, #d9c4a0);
 }
 
-/* --- Terraria-style inventory slot: тёмный "вдавленный" квадрат --- */
+/* --- Мягкий "инвентарный" квадрат: заметно вдавленный, но без резкого
+   чёрного — используется для бейджа уровня, отображения ID и т.п. --- */
 .pixel-slot {
-  background: #1a140c;
-  border: 3px solid #8a6b3e;
-  border-bottom-color: #0d0a06;
-  border-right-color: #0d0a06;
-  box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.6);
+  background: var(--tf-panel-dark, #241a12);
+  border: var(--tf-border-width, 2px) solid var(--tf-bevel-light, #a67c4e);
+  border-bottom-color: var(--tf-bevel-dark, #241608);
+  border-right-color: var(--tf-bevel-dark, #241608);
+  box-shadow: inset 1px 1px 0 rgba(0, 0, 0, 0.3);
+  border-radius: var(--tf-radius, 0);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .pixel-slot--selected {
-  border-color: #f0c97a;
+  border-color: var(--tf-primary-light, #ffd98f);
   box-shadow:
-    inset 2px 2px 0 rgba(0, 0, 0, 0.6),
-    0 0 0 2px #d9a441;
+    inset 1px 1px 0 rgba(0, 0, 0, 0.3),
+    0 0 0 2px var(--tf-primary, #f0b65c);
 }
