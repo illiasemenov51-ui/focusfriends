@@ -1,8 +1,36 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, Box, Button, Card, CardContent, Chip, CircularProgress, FormControlLabel, Stack, Switch, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  CircularProgress,
+  FormControlLabel,
+  MenuItem,
+  Stack,
+  Switch,
+  TextField,
+  Typography,
+} from "@mui/material";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 import CenterFocusStrongIcon from "@mui/icons-material/CenterFocusStrong";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import { useQuickActions } from "../../context/QuickActionsContext";
+import {
+  SOUND_PRESET_LABELS,
+  clearCustomSound,
+  getCustomSoundDataUrl,
+  getSelectedPreset,
+  playAlertSound,
+  previewPreset,
+  saveCustomSound,
+  setSelectedPreset,
+  type SoundPreset,
+} from "../../utils/postureSound";
 
 // Индексы landmark-ов позы MediaPipe: 0 = нос, 11/12 = левое/правое плечо.
 const NOSE = 0;
@@ -15,32 +43,18 @@ const BEEP_COOLDOWN_MS = 8000; // не чаще одного сигнала в �
 
 type Status = "idle" | "loading" | "no-pose" | "good" | "bad" | "error";
 
-function playBeep() {
-  try {
-    const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    const ctx = new AudioCtx();
-    const oscillator = ctx.createOscillator();
-    const gain = ctx.createGain();
-    oscillator.type = "sine";
-    oscillator.frequency.value = 720;
-    gain.gain.setValueAtTime(0.15, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
-    oscillator.connect(gain);
-    gain.connect(ctx.destination);
-    oscillator.start();
-    oscillator.stop(ctx.currentTime + 0.35);
-    oscillator.onended = () => ctx.close();
-  } catch {
-    // аудио недоступно (например, страница ещё не получила жест пользователя) — тихо пропускаем
-  }
-}
-
 export function PostureSection() {
+  const { postureSignal } = useQuickActions();
+
   const [enabled, setEnabled] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
   const [status, setStatus] = useState<Status>("idle");
   const [calibrated, setCalibrated] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [preset, setPreset] = useState<SoundPreset>(getSelectedPreset());
+  const [customSoundName, setCustomSoundName] = useState<string | null>(
+    getCustomSoundDataUrl() ? "загружен" : null
+  );
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -55,6 +69,13 @@ export function PostureSection() {
   useEffect(() => {
     soundOnRef.current = soundOn;
   }, [soundOn]);
+
+  // Круглая кнопка на главном экране прислала сигнал — включаемся сами.
+  useEffect(() => {
+    if (postureSignal > 0) {
+      setEnabled(true);
+    }
+  }, [postureSignal]);
 
   useEffect(() => {
     if (!enabled) {
@@ -141,7 +162,7 @@ export function PostureSection() {
 
       const landmarks = result.landmarks?.[0];
       if (!landmarks) {
-        setStatus(calibrated ? "no-pose" : "no-pose");
+        setStatus("no-pose");
         badSinceRef.current = null;
         return;
       }
@@ -188,7 +209,7 @@ export function PostureSection() {
         if (sustainedMs >= BAD_POSTURE_SUSTAIN_MS) {
           setStatus("bad");
           if (soundOnRef.current && now - lastBeepRef.current >= BEEP_COOLDOWN_MS) {
-            playBeep();
+            playAlertSound();
             lastBeepRef.current = now;
           }
         }
@@ -251,6 +272,34 @@ export function PostureSection() {
     baselineRatioRef.current = (shoulderMidY - nose.y) / shoulderWidth;
     badSinceRef.current = null;
     setCalibrated(true);
+  }
+
+  function handlePresetChange(next: SoundPreset) {
+    setPreset(next);
+    setSelectedPreset(next);
+  }
+
+  function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        saveCustomSound(reader.result);
+        setCustomSoundName(file.name);
+        handlePresetChange("custom");
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleClearCustomSound() {
+    clearCustomSound();
+    setCustomSoundName(null);
+    if (preset === "custom") {
+      handlePresetChange("chirp");
+    }
   }
 
   const statusLabel: Record<Status, { text: string; color: string }> = {
@@ -325,6 +374,58 @@ export function PostureSection() {
               сравнивать с этим положением.
             </Typography>
           )}
+        </CardContent>
+      </Card>
+
+      <Card variant="outlined" className="app-card">
+        <CardContent>
+          <Typography className="pixel-muted" sx={{ fontSize: 15, mb: 1.5 }}>
+            звук предупреждения
+          </Typography>
+
+          <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", alignItems: "center", mb: 1.5 }}>
+            <TextField
+              select
+              size="small"
+              label="Сигнал"
+              value={preset}
+              onChange={(e) => handlePresetChange(e.target.value as SoundPreset)}
+              sx={{ minWidth: 180 }}
+            >
+              {(Object.keys(SOUND_PRESET_LABELS) as SoundPreset[])
+                .filter((p) => p !== "custom" || customSoundName)
+                .map((p) => (
+                  <MenuItem key={p} value={p}>
+                    {SOUND_PRESET_LABELS[p]}
+                  </MenuItem>
+                ))}
+            </TextField>
+
+            <Button
+              size="small"
+              startIcon={<PlayArrowIcon />}
+              onClick={() => (preset === "custom" ? playAlertSound() : previewPreset(preset))}
+            >
+              Прослушать
+            </Button>
+          </Stack>
+
+          <Stack direction="row" spacing={1} sx={{ flexWrap: "wrap", alignItems: "center" }}>
+            <Button component="label" size="small" startIcon={<UploadFileIcon />}>
+              Загрузить свой звук
+              <input type="file" accept="audio/*" hidden onChange={handleFileUpload} />
+            </Button>
+            {customSoundName && (
+              <>
+                <Typography className="pixel-muted" sx={{ fontSize: 14 }}>
+                  {customSoundName}
+                </Typography>
+                <Button size="small" onClick={handleClearCustomSound}>
+                  Удалить
+                </Button>
+              </>
+            )}
+          </Stack>
         </CardContent>
       </Card>
     </Box>
