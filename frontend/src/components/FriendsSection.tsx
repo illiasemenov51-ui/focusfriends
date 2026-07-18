@@ -29,6 +29,7 @@ import { taskApi } from "../api/taskApi";
 import { useAuth } from "../context/AuthContext";
 import { computeLevelInfo } from "../utils/level";
 import type { FriendTask, FriendWithStats } from "../types/friend";
+import { EmptyState } from "./EmptyState";
 
 const TASK_STATUS_LABEL: Record<FriendTask["status"], string> = {
   TODO: "в очереди",
@@ -335,9 +336,7 @@ export function FriendsSection() {
           })}
         </Stack>
       ) : (
-        <Typography color="text.secondary" sx={{ textAlign: "center", py: 4, fontSize: 20 }}>
-          Пока нет друзей — отправь заявку по id выше, чтобы начать соревноваться
-        </Typography>
+        <EmptyState message="Пока нет друзей" hint="отправь заявку по id выше, чтобы начать соревноваться" />
       )}
 
       <Snackbar

@@ -19,6 +19,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { taskApi } from "../api/taskApi";
 import { useGamification } from "../context/GamificationContext";
 import type { TaskPriority } from "../types/task";
+import { EmptyState } from "./EmptyState";
 
 const priorityColor: Record<TaskPriority, "default" | "warning" | "error"> = {
   LOW: "default",
@@ -177,9 +178,7 @@ export function TaskSection() {
           ))}
         </Stack>
       ) : (
-        <Typography color="text.secondary" sx={{ textAlign: "center", py: 4, fontSize: 20 }}>
-          Пока нет задач — добавь первую выше
-        </Typography>
+        <EmptyState message="Пока нет задач" hint="добавь первую выше" />
       )}
     </Box>
   );

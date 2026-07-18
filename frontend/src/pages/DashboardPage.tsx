@@ -6,13 +6,17 @@ import { HabitSection } from "../components/HabitSection";
 import { LeaderboardSection } from "../components/LeaderboardSection";
 import { FriendsSection } from "../components/FriendsSection";
 import { CalendarSection } from "../components/CalendarSection";
+import { GroupsSection } from "../components/GroupsSection";
+import { HealthSection } from "../components/HealthSection";
 
 const tabs = [
   { label: "КВЕСТЫ", hint: "задачи дают XP по сложности" },
   { label: "НАВЫКИ", hint: "привычки качают серию" },
   { label: "РЕЙТИНГ", hint: "соревнование друзей" },
   { label: "ДРУЗЬЯ", hint: "уровни и активность союзников" },
+  { label: "ОТРЯДЫ", hint: "командный рейтинг" },
   { label: "КАЛЕНДАРЬ", hint: "развивайтесь вместе" },
+  { label: "САМОЧУВСТВИЕ", hint: "сон, нагрузка, настроение" },
 ];
 
 export function DashboardPage() {
@@ -52,7 +56,9 @@ export function DashboardPage() {
         {tab === 1 && <HabitSection />}
         {tab === 2 && <LeaderboardSection />}
         {tab === 3 && <FriendsSection />}
-        {tab === 4 && <CalendarSection />}
+        {tab === 4 && <GroupsSection />}
+        {tab === 5 && <CalendarSection />}
+        {tab === 6 && <HealthSection />}
       </Box>
     </Layout>
   );

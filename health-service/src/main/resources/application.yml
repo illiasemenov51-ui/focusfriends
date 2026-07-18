@@ -1,11 +1,11 @@
 server:
-  port: 8083
+  port: 8085
 
 spring:
   application:
-    name: social-service
+    name: health-service
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:social_db}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:health_db}
     username: ${DB_USER:focusfriends}
     password: ${DB_PASSWORD:focusfriends}
     driver-class-name: org.postgresql.Driver
@@ -18,13 +18,9 @@ spring:
         format_sql: true
     open-in-view: false
 
-auth:
+social:
   service:
-    url: ${AUTH_SERVICE_URL:http://localhost:8081}
-
-notification:
-  service:
-    url: ${NOTIFICATION_SERVICE_URL:http://localhost:8084}
+    url: ${SOCIAL_SERVICE_URL:http://localhost:8083}
 
 logging:
   level:

@@ -49,6 +49,12 @@ spring:
           predicates:
             - Path=/api/notifications/**
 
+        - id: health-service
+          uri: ${HEALTH_SERVICE_URL:http://localhost:8085}
+          order: 0
+          predicates:
+            - Path=/api/health/**
+
         - id: frontend
           uri: ${FRONTEND_URL:http://localhost:3000}
           order: 100
@@ -62,10 +68,6 @@ app:
     - /api/auth/register
     - /api/auth/login
     - /api/auth/refresh
-    - /api/auth/verify-email
-    - /api/auth/request-password-reset
-    - /api/auth/reset-password
-    - /favicon.svg
 
 logging:
   level:

@@ -30,6 +30,15 @@ public class GroupController {
         return ResponseEntity.status(HttpStatus.CREATED).body(GroupResponse.from(group));
     }
 
+    /** Группы, в которых состоит текущий пользователь. */
+    @GetMapping("/mine")
+    public ResponseEntity<List<GroupResponse>> mine() {
+        List<GroupResponse> groups = groupService.listMine(CurrentUserContext.get()).stream()
+                .map(GroupResponse::from)
+                .toList();
+        return ResponseEntity.ok(groups);
+    }
+
     @PostMapping("/{id}/join")
     public ResponseEntity<GroupMemberResponse> join(@PathVariable UUID id) {
         var member = groupService.join(CurrentUserContext.get(), id);

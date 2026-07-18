@@ -32,7 +32,6 @@ services:
       DB_USER: focusfriends
       DB_PASSWORD: focusfriends
       JWT_SECRET: ${JWT_SECRET:-this-is-a-dev-only-secret-key-change-me-in-production-please-32bytes}
-      FRONTEND_URL: http://localhost:8080
     ports:
       - "8081:8081"
 
@@ -60,14 +59,52 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      notification-service:
+        condition: service_started
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: social_db
       DB_USER: focusfriends
       DB_PASSWORD: focusfriends
+      AUTH_SERVICE_URL: http://auth-service:8081
+      NOTIFICATION_SERVICE_URL: http://notification-service:8084
     ports:
       - "8083:8083"
+
+  notification-service:
+    build: ./notification-service
+    container_name: focusfriends-notification-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: notification_db
+      DB_USER: focusfriends
+      DB_PASSWORD: focusfriends
+      MAIL_ENABLED: "false"
+    ports:
+      - "8084:8084"
+
+  health-service:
+    build: ./health-service
+    container_name: focusfriends-health-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      social-service:
+        condition: service_started
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: health_db
+      DB_USER: focusfriends
+      DB_PASSWORD: focusfriends
+      SOCIAL_SERVICE_URL: http://social-service:8083
+    ports:
+      - "8085:8085"
 
   frontend:
     build: ./frontend
@@ -84,11 +121,15 @@ services:
       - auth-service
       - core-service
       - social-service
+      - notification-service
+      - health-service
       - frontend
     environment:
       AUTH_SERVICE_URL: http://auth-service:8081
       CORE_SERVICE_URL: http://core-service:8082
       SOCIAL_SERVICE_URL: http://social-service:8083
+      NOTIFICATION_SERVICE_URL: http://notification-service:8084
+      HEALTH_SERVICE_URL: http://health-service:8085
       FRONTEND_URL: http://frontend:80
       JWT_SECRET: ${JWT_SECRET:-this-is-a-dev-only-secret-key-change-me-in-production-please-32bytes}
     ports:
@@ -96,3 +137,4 @@ services:
 
 volumes:
   pgdata:
+

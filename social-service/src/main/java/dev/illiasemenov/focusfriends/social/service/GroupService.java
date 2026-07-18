@@ -66,4 +66,12 @@ public class GroupService {
         }
         return groupMemberRepository.findAllByGroupId(groupId);
     }
+
+    /** Группы, в которых состоит пользователь. */
+    public List<Group> listMine(UUID userId) {
+        List<UUID> groupIds = groupMemberRepository.findAllByUserId(userId).stream()
+                .map(GroupMember::getGroupId)
+                .toList();
+        return groupRepository.findAllById(groupIds);
+    }
 }

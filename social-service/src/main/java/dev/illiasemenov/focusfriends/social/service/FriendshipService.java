@@ -1,5 +1,7 @@
 package dev.illiasemenov.focusfriends.social.service;
 
+import dev.illiasemenov.focusfriends.social.client.AuthServiceClient;
+import dev.illiasemenov.focusfriends.social.client.NotificationServiceClient;
 import dev.illiasemenov.focusfriends.social.entity.Friendship;
 import dev.illiasemenov.focusfriends.social.entity.FriendshipStatus;
 import dev.illiasemenov.focusfriends.social.exception.DuplicateFriendRequestException;
@@ -18,9 +20,15 @@ import java.util.UUID;
 public class FriendshipService {
 
     private final FriendshipRepository friendshipRepository;
+    private final NotificationServiceClient notificationServiceClient;
+    private final AuthServiceClient authServiceClient;
 
-    public FriendshipService(FriendshipRepository friendshipRepository) {
+    public FriendshipService(FriendshipRepository friendshipRepository,
+                              NotificationServiceClient notificationServiceClient,
+                              AuthServiceClient authServiceClient) {
         this.friendshipRepository = friendshipRepository;
+        this.notificationServiceClient = notificationServiceClient;
+        this.authServiceClient = authServiceClient;
     }
 
     @Transactional
@@ -40,8 +48,13 @@ public class FriendshipService {
                 .status(FriendshipStatus.PENDING)
                 .build();
 
-        Friendship saved = friendshipRepository.save(friendship);
-        return Objects.requireNonNull(saved);
+        Friendship saved = Objects.requireNonNull(friendshipRepository.save(friendship));
+
+        String requesterName = authServiceClient.getDisplayName(requesterId);
+        notificationServiceClient.send(addresseeId, "FRIEND_REQUEST",
+                requesterName + " хочет добавить вас в друзья");
+
+        return saved;
     }
 
     @Transactional
@@ -57,8 +70,13 @@ public class FriendshipService {
         }
 
         friendship.setStatus(FriendshipStatus.ACCEPTED);
-        Friendship saved = friendshipRepository.save(friendship);
-        return Objects.requireNonNull(saved);
+        Friendship saved = Objects.requireNonNull(friendshipRepository.save(friendship));
+
+        String accepterName = authServiceClient.getDisplayName(currentUserId);
+        notificationServiceClient.send(friendship.getRequesterId(), "FRIEND_ACCEPTED",
+                accepterName + " принял(а) вашу заявку в друзья");
+
+        return saved;
     }
 
     public List<Friendship> listAccepted(UUID userId) {

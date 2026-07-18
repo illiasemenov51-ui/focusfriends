@@ -14,6 +14,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { habitApi } from "../api/habitApi";
 import type { HabitCategory } from "../types/habit";
 import { HabitCard } from "./HabitCard";
+import { EmptyState } from "./EmptyState";
 
 export function HabitSection() {
   const queryClient = useQueryClient();
@@ -92,9 +93,7 @@ export function HabitSection() {
           ))}
         </Stack>
       ) : (
-        <Typography color="text.secondary" sx={{ textAlign: "center", py: 4, fontSize: 20 }}>
-          Пока нет привычек — добавь первую выше
-        </Typography>
+        <EmptyState message="Пока нет привычек" hint="добавь первую выше" />
       )}
     </Box>
   );
