@@ -39,8 +39,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/refresh", "/api/auth/verify-email", "/api/auth/request-password-reset", "/api/auth/reset-password").permitAll()
-                        .requestMatchers("/api/auth/logout", "/api/auth/resend-verification").authenticated()
+                        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/refresh").permitAll()
+                        .requestMatchers("/api/auth/logout").authenticated()
+                        // внутренний вызов от gateway — свой механизм проверки (X-Api-Token), не JWT
+                        .requestMatchers("/api/auth/api-tokens/validate").permitAll()
+                        .requestMatchers("/api/auth/api-tokens/**").authenticated()
                         .requestMatchers("/actuator/health").permitAll()
                         // порядок важен: /me — конкретное правило, должно идти раньше общего шаблона {id}
                         .requestMatchers("/api/users/me").authenticated()

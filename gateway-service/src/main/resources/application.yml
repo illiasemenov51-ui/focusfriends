@@ -64,6 +64,10 @@ spring:
 app:
   jwt:
     secret: ${JWT_SECRET:this-is-a-dev-only-secret-key-change-me-in-production-please-32bytes}
+  auth-service:
+    # тот же адрес, что и в маршруте auth-service выше — используется для
+    # проверки персональных API-токенов (X-Api-Token), напрямую, без роутинга
+    url: ${AUTH_SERVICE_URL:http://localhost:8081}
   public-paths:
     - /api/auth/register
     - /api/auth/login

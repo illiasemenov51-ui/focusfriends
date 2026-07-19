@@ -1,6 +1,7 @@
 package dev.illiasemenov.focusfriends.gateway.filter;
 
 import dev.illiasemenov.focusfriends.gateway.config.GatewaySecurityProperties;
+import dev.illiasemenov.focusfriends.gateway.security.ApiTokenValidator;
 import dev.illiasemenov.focusfriends.gateway.security.JwtValidator;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -21,10 +22,13 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
- * Проверяет JWT на входе в gateway. Публичные пути (регистрация/логин/refresh,
- * а также GET /api/users/{id} для публичного профиля) пропускаются без токена.
- * При успешной валидации прокидывает вниз заголовок X-User-Id, которому
- * доверяют downstream-сервисы.
+ * Проверяет Bearer-токен на входе в gateway — это либо обычный JWT (веб-сессия,
+ * проверяется локально по подписи), либо персональный API-токен вида ff_pat_...
+ * (внешние автоматизации вроде iOS Shortcuts — проверяется сетевым вызовом в
+ * auth-service, т.к. его валидность/отзыв живут в БД, а не в подписи).
+ * Публичные пути (регистрация/логин/refresh, а также GET /api/users/{id} для
+ * публичного профиля) пропускаются без токена. При успехе прокидывает вниз
+ * заголовок X-User-Id, которому доверяют downstream-сервисы.
  */
 @Component
 public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
@@ -34,7 +38,6 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
     private static final List<String> FRONTEND_PUBLIC_PATHS = List.of(
             "/",
             "/index.html",
-            "/favicon.svg",
             "/assets",
             "/favicon.ico",
             "/manifest.json",
@@ -42,10 +45,14 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
     );
 
     private final JwtValidator jwtValidator;
+    private final ApiTokenValidator apiTokenValidator;
     private final List<String> publicPaths;
 
-    public JwtAuthenticationGlobalFilter(JwtValidator jwtValidator, GatewaySecurityProperties properties) {
+    public JwtAuthenticationGlobalFilter(JwtValidator jwtValidator,
+                                          ApiTokenValidator apiTokenValidator,
+                                          GatewaySecurityProperties properties) {
         this.jwtValidator = jwtValidator;
+        this.apiTokenValidator = apiTokenValidator;
         this.publicPaths = properties.publicPaths();
     }
 
@@ -69,14 +76,24 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
         }
 
         String token = authHeader.substring(BEARER_PREFIX.length());
-        Optional<String> userIdOpt = jwtValidator.validateAndExtractUserId(token);
 
+        if (apiTokenValidator.looksLikeApiToken(token)) {
+            return apiTokenValidator.validateAndExtractUserId(token)
+                    .flatMap(userId -> proceedWithUserId(exchange, chain, userId))
+                    .switchIfEmpty(Mono.defer(() -> unauthorized(exchange, "Недействительный API-токен")));
+        }
+
+        Optional<String> userIdOpt = jwtValidator.validateAndExtractUserId(token);
         if (userIdOpt.isEmpty()) {
             return unauthorized(exchange, "Недействительный или истёкший токен");
         }
 
-        ServerHttpRequest mutatedRequest = request.mutate()
-                .header("X-User-Id", userIdOpt.get())
+        return proceedWithUserId(exchange, chain, userIdOpt.get());
+    }
+
+    private Mono<Void> proceedWithUserId(ServerWebExchange exchange, GatewayFilterChain chain, String userId) {
+        ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
+                .header("X-User-Id", userId)
                 .build();
 
         return chain.filter(exchange.mutate().request(mutatedRequest).build());

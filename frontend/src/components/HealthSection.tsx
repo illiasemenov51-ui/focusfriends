@@ -24,6 +24,7 @@ import { friendApi } from "../api/friendApi";
 import { userApi } from "../api/userApi";
 import { useAuth } from "../context/AuthContext";
 import type { WeeklySummary } from "../types/health";
+import { ApiTokensSection } from "./ApiTokensSection";
 
 const LEVEL_LABELS = ["", "1", "2", "3", "4", "5"];
 
@@ -259,6 +260,9 @@ export function HealthSection() {
           </Stack>
         </CardContent>
       </Card>
+
+      {/* Автоматический сбор данных (Shortcuts) */}
+      <ApiTokensSection />
 
       {/* Приватность */}
       <Card variant="outlined" className="app-card" sx={{ mb: 2 }}>
