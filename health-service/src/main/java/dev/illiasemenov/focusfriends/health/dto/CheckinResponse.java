@@ -12,10 +12,11 @@ public record CheckinResponse(
         int energyLevel,
         int stressLevel,
         int moodLevel,
+        Integer caloriesIntake,
         String note
 ) {
     public static CheckinResponse from(HealthCheckin c) {
         return new CheckinResponse(c.getId(), c.getDate(), c.getSleepHours(), c.getEnergyLevel(),
-                c.getStressLevel(), c.getMoodLevel(), c.getNote());
+                c.getStressLevel(), c.getMoodLevel(), c.getCaloriesIntake(), c.getNote());
     }
 }

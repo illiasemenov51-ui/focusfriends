@@ -9,14 +9,15 @@ import lombok.Setter;
 
 import java.util.UUID;
 
+/** Личные настройки раздела "Самочувствие": приватность + цель по калориям. */
 @Entity
-@Table(name = "health_privacy_settings")
+@Table(name = "health_settings")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class HealthPrivacySettings {
+public class HealthSettings {
 
     @Id
     @Column(name = "user_id")
@@ -26,4 +27,8 @@ public class HealthPrivacySettings {
     @Column(name = "share_with_friends", nullable = false)
     @Builder.Default
     private boolean shareWithFriends = true;
+
+    /** Дневная цель по калориям; null — цель не задана. */
+    @Column(name = "calorie_goal")
+    private Integer calorieGoal;
 }

@@ -48,6 +48,10 @@ public class HealthCheckin {
     @Column(name = "mood_level", nullable = false)
     private int moodLevel;
 
+    /** Съедено калорий за день; null — не отмечено сегодня. */
+    @Column(name = "calories_intake")
+    private Integer caloriesIntake;
+
     @Column(length = 500)
     private String note;
 

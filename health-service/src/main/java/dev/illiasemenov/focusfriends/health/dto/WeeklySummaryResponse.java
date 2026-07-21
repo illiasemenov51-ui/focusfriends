@@ -12,6 +12,10 @@ public record WeeklySummaryResponse(
         double avgEnergy,
         double avgStress,
         double avgMood,
+        /** null — калории не отмечались ни разу за период. */
+        Double avgCalories,
+        /** Личная цель пользователя; null — не задана. */
+        Integer calorieGoal,
         /** 0..100 — сводный индекс нагрузки, выше = тяжелее неделя. */
         int loadIndex,
         /** Короткие человекочитаемые наблюдения по своим же отметкам — не диагноз. */

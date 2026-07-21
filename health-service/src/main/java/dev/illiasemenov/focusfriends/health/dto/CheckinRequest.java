@@ -26,6 +26,10 @@ public record CheckinRequest(
         @Min(1) @Max(5)
         int moodLevel,
 
+        // Необязательно — калорийность съеденного за день. null, если не отслеживается сегодня.
+        @Min(0) @Max(20000)
+        Integer caloriesIntake,
+
         @Size(max = 500)
         String note
 ) {

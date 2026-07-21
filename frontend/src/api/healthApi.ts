@@ -1,5 +1,5 @@
 import { apiClient } from "./client";
-import type { Checkin, CheckinInput, WeeklySummary } from "../types/health";
+import type { Checkin, CheckinInput, HealthSettings, WeeklySummary } from "../types/health";
 
 export const healthApi = {
   submitCheckin: async (input: CheckinInput): Promise<Checkin> => {
@@ -22,13 +22,13 @@ export const healthApi = {
     return response.data;
   },
 
-  getPrivacy: async (): Promise<boolean> => {
-    const response = await apiClient.get<{ shareWithFriends: boolean }>("/api/health/privacy");
-    return response.data.shareWithFriends;
+  getSettings: async (): Promise<HealthSettings> => {
+    const response = await apiClient.get<HealthSettings>("/api/health/settings");
+    return response.data;
   },
 
-  setPrivacy: async (shareWithFriends: boolean): Promise<boolean> => {
-    const response = await apiClient.put<{ shareWithFriends: boolean }>("/api/health/privacy", { shareWithFriends });
-    return response.data.shareWithFriends;
+  updateSettings: async (settings: HealthSettings): Promise<HealthSettings> => {
+    const response = await apiClient.put<HealthSettings>("/api/health/settings", settings);
+    return response.data;
   },
 };

@@ -2,10 +2,11 @@ package dev.illiasemenov.focusfriends.health.controller;
 
 import dev.illiasemenov.focusfriends.health.dto.CheckinRequest;
 import dev.illiasemenov.focusfriends.health.dto.CheckinResponse;
-import dev.illiasemenov.focusfriends.health.dto.PrivacySettingsResponse;
-import dev.illiasemenov.focusfriends.health.dto.UpdatePrivacySettingsRequest;
+import dev.illiasemenov.focusfriends.health.dto.HealthSettingsResponse;
+import dev.illiasemenov.focusfriends.health.dto.UpdateHealthSettingsRequest;
 import dev.illiasemenov.focusfriends.health.dto.WeeklySummaryResponse;
 import dev.illiasemenov.focusfriends.health.entity.HealthCheckin;
+import dev.illiasemenov.focusfriends.health.entity.HealthSettings;
 import dev.illiasemenov.focusfriends.health.security.CurrentUserContext;
 import dev.illiasemenov.focusfriends.health.service.HealthService;
 import jakarta.validation.Valid;
@@ -45,7 +46,7 @@ public class HealthController {
         return ResponseEntity.ok(checkins);
     }
 
-    /** Сводка за последние 7 дней: средние значения + человекочитаемые наблюдения. */
+    /** Сводка за последние 7 дней: средние значения (сон/энергия/стресс/настроение/калории) + наблюдения. */
     @GetMapping("/summary")
     public ResponseEntity<WeeklySummaryResponse> summary() {
         return ResponseEntity.ok(healthService.getOwnSummary(CurrentUserContext.get()));
@@ -57,14 +58,17 @@ public class HealthController {
         return ResponseEntity.ok(healthService.getFriendSummary(CurrentUserContext.get(), friendId));
     }
 
-    @GetMapping("/privacy")
-    public ResponseEntity<PrivacySettingsResponse> getPrivacy() {
-        return ResponseEntity.ok(new PrivacySettingsResponse(healthService.getShareWithFriends(CurrentUserContext.get())));
+    /** Настройки раздела: делиться ли с друзьями + личная цель по калориям. */
+    @GetMapping("/settings")
+    public ResponseEntity<HealthSettingsResponse> getSettings() {
+        HealthSettings settings = healthService.getSettings(CurrentUserContext.get());
+        return ResponseEntity.ok(new HealthSettingsResponse(settings.isShareWithFriends(), settings.getCalorieGoal()));
     }
 
-    @PutMapping("/privacy")
-    public ResponseEntity<PrivacySettingsResponse> updatePrivacy(@Valid @RequestBody UpdatePrivacySettingsRequest request) {
-        boolean share = healthService.setShareWithFriends(CurrentUserContext.get(), request.shareWithFriends());
-        return ResponseEntity.ok(new PrivacySettingsResponse(share));
+    @PutMapping("/settings")
+    public ResponseEntity<HealthSettingsResponse> updateSettings(@Valid @RequestBody UpdateHealthSettingsRequest request) {
+        HealthSettings settings = healthService.updateSettings(
+                CurrentUserContext.get(), request.shareWithFriends(), request.calorieGoal());
+        return ResponseEntity.ok(new HealthSettingsResponse(settings.isShareWithFriends(), settings.getCalorieGoal()));
     }
 }
