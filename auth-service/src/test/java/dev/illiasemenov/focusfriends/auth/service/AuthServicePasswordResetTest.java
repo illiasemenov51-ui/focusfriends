@@ -87,7 +87,7 @@ class AuthServicePasswordResetTest {
                     }
                 },
                 new JwtService(new JwtProperties("this-is-a-dev-only-secret-key-change-me-in-production-please-32bytes", 900_000L, 604_800_000L)),
-                new NotificationServiceClient("http://localhost:8084") {
+                new NotificationServiceClient("http://localhost:8084", "test-internal-secret") {
                     @Override
                     public void sendVerificationEmail(UUID userId, String recipientEmail, String verificationLink) {
                     }
@@ -179,7 +179,7 @@ class AuthServicePasswordResetTest {
                     }
                 },
                 new JwtService(new JwtProperties("this-is-a-dev-only-secret-key-change-me-in-production-please-32bytes", 900_000L, 604_800_000L)),
-                new NotificationServiceClient("http://localhost:8084") {
+                new NotificationServiceClient("http://localhost:8084", "test-internal-secret") {
                     @Override
                     public void sendVerificationEmail(UUID userId, String recipientEmail, String verificationLink) {
                     }

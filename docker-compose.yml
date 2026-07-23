@@ -32,8 +32,12 @@ services:
       DB_USER: focusfriends
       DB_PASSWORD: focusfriends
       JWT_SECRET: ${JWT_SECRET:-this-is-a-dev-only-secret-key-change-me-in-production-please-32bytes}
-    ports:
-      - "8081:8081"
+      INTERNAL_SHARED_SECRET: ${INTERNAL_SHARED_SECRET:-dev-only-internal-secret-change-me-in-production}
+    # Не публикуем порт на хост: наружу сервис должен быть доступен только через
+    # gateway-service. "expose" делает порт видимым другим контейнерам в той же
+    # docker-сети, но не на хосте/интернете.
+    expose:
+      - "8081"
 
   core-service:
     build: ./core-service
@@ -50,8 +54,9 @@ services:
       DB_USER: focusfriends
       DB_PASSWORD: focusfriends
       SOCIAL_SERVICE_URL: http://social-service:8083
-    ports:
-      - "8082:8082"
+      INTERNAL_SHARED_SECRET: ${INTERNAL_SHARED_SECRET:-dev-only-internal-secret-change-me-in-production}
+    expose:
+      - "8082"
 
   social-service:
     build: ./social-service
@@ -69,8 +74,9 @@ services:
       DB_PASSWORD: focusfriends
       AUTH_SERVICE_URL: http://auth-service:8081
       NOTIFICATION_SERVICE_URL: http://notification-service:8084
-    ports:
-      - "8083:8083"
+      INTERNAL_SHARED_SECRET: ${INTERNAL_SHARED_SECRET:-dev-only-internal-secret-change-me-in-production}
+    expose:
+      - "8083"
 
   notification-service:
     build: ./notification-service
@@ -85,8 +91,9 @@ services:
       DB_USER: focusfriends
       DB_PASSWORD: focusfriends
       MAIL_ENABLED: "false"
-    ports:
-      - "8084:8084"
+      INTERNAL_SHARED_SECRET: ${INTERNAL_SHARED_SECRET:-dev-only-internal-secret-change-me-in-production}
+    expose:
+      - "8084"
 
   health-service:
     build: ./health-service
@@ -103,8 +110,9 @@ services:
       DB_USER: focusfriends
       DB_PASSWORD: focusfriends
       SOCIAL_SERVICE_URL: http://social-service:8083
-    ports:
-      - "8085:8085"
+      INTERNAL_SHARED_SECRET: ${INTERNAL_SHARED_SECRET:-dev-only-internal-secret-change-me-in-production}
+    expose:
+      - "8085"
 
   frontend:
     build: ./frontend
@@ -132,6 +140,8 @@ services:
       HEALTH_SERVICE_URL: http://health-service:8085
       FRONTEND_URL: http://frontend:80
       JWT_SECRET: ${JWT_SECRET:-this-is-a-dev-only-secret-key-change-me-in-production-please-32bytes}
+      INTERNAL_SHARED_SECRET: ${INTERNAL_SHARED_SECRET:-dev-only-internal-secret-change-me-in-production}
+    # Единственный сервис (кроме frontend), чей порт публикуется наружу.
     ports:
       - "8080:8080"
 

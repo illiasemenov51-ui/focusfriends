@@ -102,7 +102,7 @@ class AuthServiceEmailVerificationTest {
                     }
                 },
                 new JwtService(new JwtProperties("this-is-a-dev-only-secret-key-change-me-in-production-please-32bytes", 900_000L, 604_800_000L)),
-                new NotificationServiceClient("http://localhost:8084"),
+                new NotificationServiceClient("http://localhost:8084", "test-internal-secret"),
                 "http://localhost:5173"
         );
 

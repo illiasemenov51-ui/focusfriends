@@ -25,3 +25,8 @@ social:
 logging:
   level:
     dev.illiasemenov.focusfriends: DEBUG
+
+internal:
+  # Общий секрет с gateway. Запросы без него отклоняются (403) — защита от
+  # подделки X-User-Id при прямом сетевом доступе к сервису, минуя gateway.
+  shared-secret: ${INTERNAL_SHARED_SECRET:dev-only-internal-secret-change-me-in-production}

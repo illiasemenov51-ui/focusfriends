@@ -29,6 +29,11 @@ notification:
   service:
     url: ${NOTIFICATION_SERVICE_URL:http://localhost:8084}
 
+internal:
+  # Общий секрет с notification-service (X-Internal-Secret), которым auth-service
+  # подписывает свои прямые сервис-сервис вызовы (отправка писем верификации/сброса пароля).
+  shared-secret: ${INTERNAL_SHARED_SECRET:dev-only-internal-secret-change-me-in-production}
+
 logging:
   level:
     dev.illiasemenov.focusfriends: DEBUG

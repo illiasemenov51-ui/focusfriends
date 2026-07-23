@@ -15,8 +15,12 @@ public class SocialServiceClient {
 
     private final RestClient restClient;
 
-    public SocialServiceClient(@Value("${social.service.url:http://localhost:8083}") String socialServiceUrl) {
-        this.restClient = RestClient.create(socialServiceUrl);
+    public SocialServiceClient(@Value("${social.service.url:http://localhost:8083}") String socialServiceUrl,
+                                @Value("${internal.shared-secret}") String internalSharedSecret) {
+        this.restClient = RestClient.builder()
+                .baseUrl(socialServiceUrl)
+                .defaultHeader("X-Internal-Secret", internalSharedSecret)
+                .build();
     }
 
     private record FriendshipDto(UUID id, UUID requesterId, UUID addresseeId, String status, Instant createdAt) {

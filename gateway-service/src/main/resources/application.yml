@@ -72,6 +72,16 @@ app:
     - /api/auth/register
     - /api/auth/login
     - /api/auth/refresh
+  internal:
+    # Общий секрет с downstream-сервисами. Gateway добавляет его в каждый запрос,
+    # который сам проверил (JWT/API-токен) — downstream-сервисы отклоняют запросы
+    # без него, чтобы X-User-Id нельзя было подделать в обход gateway.
+    shared-secret: ${INTERNAL_SHARED_SECRET:dev-only-internal-secret-change-me-in-production}
+    # Пути, которые существуют ТОЛЬКО для вызовов сервис-сервис напрямую (минуя
+    # gateway) и никогда не должны быть доступны внешнему клиенту, даже с валидным JWT.
+    service-only-paths:
+      - /api/leaderboard/points
+      - /api/notifications/send
 
 logging:
   level:

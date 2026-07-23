@@ -15,8 +15,12 @@ public class NotificationServiceClient {
 
     private final RestClient restClient;
 
-    public NotificationServiceClient(@Value("${notification.service.url:http://localhost:8084}") String notificationServiceUrl) {
-        this.restClient = RestClient.create(notificationServiceUrl);
+    public NotificationServiceClient(@Value("${notification.service.url:http://localhost:8084}") String notificationServiceUrl,
+                                      @Value("${internal.shared-secret}") String internalSharedSecret) {
+        this.restClient = RestClient.builder()
+                .baseUrl(notificationServiceUrl)
+                .defaultHeader("X-Internal-Secret", internalSharedSecret)
+                .build();
     }
 
     private record SendNotificationDto(UUID userId, String type, String message, String channel, String recipientEmail) {
